@@ -1,50 +1,24 @@
-# Projeto Laravel CRUD (Docker-Ready)
+# Diretrizes Técnicas do Gemini
 
-Este é um exemplo profissional de CRUD utilizando **Laravel 11**, **Inertia.js (Vue 3)**, **Tailwind CSS** e **Docker (Sail)**.
+Este arquivo contém as instruções e padrões aprovados para o desenvolvimento deste projeto.
 
-## Visão Geral
+## 📋 Padrões de Codificação
+- **Backend:** Seguir PSR-12 para PHP.
+- **Frontend:** Componentes Vue 3 utilizando `<script setup lang="ts">`.
+- **Commits:** Mensagens em Inglês, claras e concisas.
+- **Autorização:** Sempre utilizar `Policies` do Laravel para proteger recursos.
+- **Controllers:** Manter controladores "magros" (Thin Controllers).
 
-- **Backend:** Laravel 11 (PHP 8.4 no container).
-- **Frontend:** Vue 3 com Inertia.js (Moderno e Fluido).
-- **Banco de Dados:** MySQL 8.0 rodando via Docker.
-- **Cache:** Redis.
-- **E-mails:** Mailpit (Dashboard acessível na porta 8025).
+## 🛠️ Fluxo de Trabalho
+1. **Alteração de Código:** Comitar apenas os arquivos alterados antes de qualquer deploy ou build pesado.
+2. **Push:** Realizar `git push` após cada commit de funcionalidade.
+3. **Validação:** Sempre utilizar a extensão `chrome-devtools` para validar alterações visuais ou de fluxo de usuário.
+4. **Documentação:** Manter `TODO.md` atualizado com o progresso das tarefas.
 
-## Como Iniciar o Projeto (Docker)
+## 🔍 Testes Automatizados
+- Priorizar o uso do Chrome DevTools para simular interações de usuário reais.
+- Documentar bugs encontrados no `TODO.md`.
 
-Siga estes passos profissionais no seu terminal:
-
-1.  **Subir os Containers:**
-    ```bash
-    docker compose up -d
-    ```
-
-2.  **Entrar no Container (Opcional):**
-    ```bash
-    docker compose exec laravel.test bash
-    ```
-
-3.  **Configuração Inicial (Dentro do container):**
-    ```bash
-    composer install
-    npm install
-    php artisan migrate
-    npm run build
-    ```
-
-4.  **Acessar a Aplicação:**
-    Abra `http://localhost` no seu navegador. Registre-se em `/register` para gerenciar suas tarefas.
-
-## Convenções de Desenvolvimento
-
-- **Padrões:** PSR-12 para PHP, Componentes SFC para Vue 3.
-- **Segurança:** Autorização via `TaskPolicy` (um usuário só acessa as suas tarefas).
-- **Relacionamentos:** Cada `Task` pertence obrigatoriamente a um `User`.
-
-## Comandos Úteis do Sail
-
-Se você preferir usar o Sail (atalho oficial do Laravel para Docker):
-
-- **Subir tudo:** `./vendor/bin/sail up -d`
-- **Rodar Artisan:** `./vendor/bin/sail artisan [comando]`
-- **Rodar NPM:** `./vendor/bin/sail npm run dev`
+## 💾 Memórias Úteis
+- O usuário de teste padrão é `gemini@gemini` com a senha `gemini123`.
+- O trait `AuthorizesRequests` deve ser usado na classe base `Controller.php`.
