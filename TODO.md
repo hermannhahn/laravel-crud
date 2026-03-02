@@ -21,6 +21,13 @@
     - [x] Frontend: User Profile page.
     - [x] Frontend: Conditional Navigation Menu based on roles/permissions.
     - [x] Validation: Test Admin and Common User flows via Chrome DevTools.
+- [x] Advanced User Management (Admin):
+    - [x] Database: Migration to add `is_active` to `users` table.
+    - [x] Backend: Update `UserController` with `show`, `destroy`, and `toggleStatus` methods.
+    - [x] Backend: Global middleware to block inactive users.
+    - [x] Frontend: Update `Users/Index.vue` with status toggle and delete actions.
+    - [x] Frontend: Create `Users/Show.vue` for detailed user information.
+    - [x] Validation: Test account deactivation and deletion via Chrome DevTools.
 
 ## 📋 Pending
 - [ ] Improve visual feedback (toasts) in the frontend.

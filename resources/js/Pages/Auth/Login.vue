@@ -35,6 +35,10 @@ const submit = () => {
             {{ status }}
         </div>
 
+        <div v-if="$page.props.flash.error" class="mb-4 text-sm font-medium text-red-600">
+            {{ $page.props.flash.error }}
+        </div>
+
         <form @submit.prevent="submit">
             <div>
                 <InputLabel for="email" value="Email" />
