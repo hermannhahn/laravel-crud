@@ -18,6 +18,10 @@ class TaskController extends Controller
      */
     public function index(): Response
     {
+        if (!Auth::user()->hasModulePermission('tasks', 'view')) {
+            abort(403, 'You do not have permission to view tasks.');
+        }
+
         $tasks = Auth::user()->tasks()
             ->latest()
             ->paginate(10)
@@ -25,14 +29,28 @@ class TaskController extends Controller
 
         return Inertia::render('Tasks/Index', [
             'tasks' => TaskResource::collection($tasks),
+            'can' => [
+                'create' => Auth::user()->hasModulePermission('tasks', 'create'),
+                'update' => Auth::user()->hasModulePermission('tasks', 'update'),
+                'delete' => Auth::user()->hasModulePermission('tasks', 'delete'),
+            ]
         ]);
     }
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create(): Response
+    public function create(): Response|RedirectResponse
     {
+        if (!Auth::user()->hasModulePermission('tasks', 'create')) {
+            abort(403, 'You do not have permission to create tasks.');
+        }
+
+        if (Auth::user()->hasReachedMonthlyLimit('tasks')) {
+            return redirect()->route('tasks.index')
+                ->with('error', 'Monthly task limit reached.');
+        }
+
         return Inertia::render('Tasks/Create');
     }
 
@@ -41,6 +59,15 @@ class TaskController extends Controller
      */
     public function store(StoreTaskRequest $request): RedirectResponse
     {
+        if (!$request->user()->hasModulePermission('tasks', 'create')) {
+            abort(403, 'You do not have permission to create tasks.');
+        }
+
+        if ($request->user()->hasReachedMonthlyLimit('tasks')) {
+            return redirect()->route('tasks.index')
+                ->with('error', 'Monthly task limit reached.');
+        }
+
         $request->user()->tasks()->create($request->validated());
 
         return redirect()->route('tasks.index')
@@ -52,6 +79,10 @@ class TaskController extends Controller
      */
     public function show(Task $task): Response
     {
+        if (!Auth::user()->hasModulePermission('tasks', 'view')) {
+            abort(403, 'You do not have permission to view tasks.');
+        }
+
         $this->authorize('view', $task);
 
         return Inertia::render('Tasks/Show', [
@@ -64,6 +95,10 @@ class TaskController extends Controller
      */
     public function edit(Task $task): Response
     {
+        if (!Auth::user()->hasModulePermission('tasks', 'update')) {
+            abort(403, 'You do not have permission to update tasks.');
+        }
+
         $this->authorize('update', $task);
 
         return Inertia::render('Tasks/Edit', [
@@ -76,6 +111,10 @@ class TaskController extends Controller
      */
     public function update(UpdateTaskRequest $request, Task $task): RedirectResponse
     {
+        if (!$request->user()->hasModulePermission('tasks', 'update')) {
+            abort(403, 'You do not have permission to update tasks.');
+        }
+
         $this->authorize('update', $task);
 
         $task->update($request->validated());
@@ -89,6 +128,10 @@ class TaskController extends Controller
      */
     public function destroy(Task $task): RedirectResponse
     {
+        if (!Auth::user()->hasModulePermission('tasks', 'delete')) {
+            abort(403, 'You do not have permission to delete tasks.');
+        }
+
         $this->authorize('delete', $task);
 
         $task->delete();

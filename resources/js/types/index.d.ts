@@ -5,6 +5,8 @@ export interface User {
     name: string;
     email: string;
     email_verified_at?: string;
+    role: string;
+    avatar_url: string | null;
 }
 
 export type PageProps<
@@ -12,6 +14,10 @@ export type PageProps<
 > = T & {
     auth: {
         user: User;
+    };
+    flash: {
+        message: string | null;
+        error: string | null;
     };
     ziggy: Config & { location: string };
 };
