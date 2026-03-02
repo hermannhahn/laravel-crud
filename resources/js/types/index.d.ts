@@ -6,6 +6,7 @@ export interface User {
     email: string;
     email_verified_at?: string;
     role: string;
+    user_type: string;
     avatar_url: string | null;
 }
 

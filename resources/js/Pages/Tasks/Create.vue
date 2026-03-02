@@ -6,11 +6,24 @@ import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 
+const props = defineProps<{
+    professionals: Array<{
+        id: number;
+        name: string;
+    }>;
+    areas: Array<{
+        id: number;
+        name: string;
+    }>;
+}>();
+
 const form = useForm({
     title: '',
     description: '',
     status: 'pending',
     due_date: '',
+    professional_id: '',
+    task_area_id: '',
 });
 
 const submit = () => {
@@ -55,6 +68,37 @@ const submit = () => {
                                     rows="4"
                                 ></textarea>
                                 <InputError class="mt-2" :message="form.errors.description" />
+                            </div>
+
+                            <div class="mt-4">
+                                <InputLabel for="task_area_id" value="Task Area" />
+                                <select
+                                    id="task_area_id"
+                                    v-model="form.task_area_id"
+                                    class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm"
+                                    required
+                                >
+                                    <option value="" disabled>Select area...</option>
+                                    <option v-for="area in areas" :key="area.id" :value="area.id">
+                                        {{ area.name }}
+                                    </option>
+                                </select>
+                                <InputError :message="form.errors.task_area_id" class="mt-2" />
+                            </div>
+
+                            <div class="mt-4">
+                                <InputLabel for="professional_id" value="Assign Professional" />
+                                <select
+                                    id="professional_id"
+                                    v-model="form.professional_id"
+                                    class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm"
+                                >
+                                    <option value="">No professional assigned</option>
+                                    <option v-for="pro in professionals" :key="pro.id" :value="pro.id">
+                                        {{ pro.name }}
+                                    </option>
+                                </select>
+                                <InputError :message="form.errors.professional_id" class="mt-2" />
                             </div>
 
                             <div class="mt-4">

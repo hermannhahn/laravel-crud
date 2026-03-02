@@ -11,6 +11,7 @@ const form = useForm({
     email: '',
     password: '',
     password_confirmation: '',
+    user_type: 'professional',
 });
 
 const submit = () => {
@@ -41,6 +42,22 @@ const submit = () => {
                 />
 
                 <InputError class="mt-2" :message="form.errors.name" />
+            </div>
+
+            <div class="mt-4">
+                <InputLabel for="user_type" value="Account Type" />
+                
+                <select
+                    id="user_type"
+                    v-model="form.user_type"
+                    class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm"
+                    required
+                >
+                    <option value="professional">Professional</option>
+                    <option value="company">Company</option>
+                </select>
+
+                <InputError class="mt-2" :message="form.errors.user_type" />
             </div>
 
             <div class="mt-4">

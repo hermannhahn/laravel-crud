@@ -37,6 +37,12 @@ const showingNavigationDropdown = ref(false);
                                 <NavLink :href="route('tasks.index')" :active="route().current('tasks.*')">
                                     Tasks
                                 </NavLink>
+                                <NavLink v-if="$page.props.auth.user.user_type === 'company'" :href="route('team.index')" :active="route().current('team.*')">
+                                    Team
+                                </NavLink>
+                                <NavLink v-if="$page.props.auth.user.user_type === 'company'" :href="route('areas.index')" :active="route().current('areas.*')">
+                                    Areas
+                                </NavLink>
                                 <NavLink v-if="$page.props.auth.user.role === 'admin'" :href="route('users.index')" :active="route().current('users.*')">
                                     Users
                                 </NavLink>
@@ -153,6 +159,12 @@ const showingNavigationDropdown = ref(false);
                             :active="route().current('tasks.*')"
                         >
                             Tasks
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink v-if="$page.props.auth.user.user_type === 'company'" :href="route('team.index')" :active="route().current('team.*')">
+                            Team
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink v-if="$page.props.auth.user.user_type === 'company'" :href="route('areas.index')" :active="route().current('areas.*')">
+                            Areas
                         </ResponsiveNavLink>
                         <ResponsiveNavLink v-if="$page.props.auth.user.role === 'admin'" :href="route('users.index')" :active="route().current('users.*')">
                             Users

@@ -9,6 +9,8 @@ use Inertia\Inertia;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserPermissionController;
 use App\Http\Controllers\UserProfileController;
+use App\Http\Controllers\CompanyTeamController;
+use App\Http\Controllers\TaskAreaController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -34,8 +36,22 @@ Route::middleware('auth')->group(function () {
     Route::post('/user-profile/password', [UserProfileController::class, 'updatePassword'])->name('user-profile.password');
 
     Route::resource('tasks', TaskController::class);
+    Route::post('/tasks/{task}/respond', [TaskController::class, 'respond'])->name('tasks.respond');
+    Route::post('/tasks/{task}/accept', [TaskController::class, 'accept'])->name('tasks.accept');
+    Route::post('/tasks/{task}/release', [TaskController::class, 'release'])->name('tasks.release');
+    Route::post('/tasks/{task}/unassign', [TaskController::class, 'unassign'])->name('tasks.unassign');
 
-    // Admin only routes
+    // Company Team and Area management
+    Route::middleware('auth')->group(function () {
+        Route::get('/team', [CompanyTeamController::class, 'index'])->name('team.index');
+        Route::post('/team/add', [CompanyTeamController::class, 'addProfessional'])->name('team.add');
+        Route::delete('/team/{user}', [CompanyTeamController::class, 'removeProfessional'])->name('team.remove');
+        Route::patch('/team/{user}/permissions', [CompanyTeamController::class, 'updatePermissions'])->name('team.update-permissions');
+        
+        Route::get('/areas', [TaskAreaController::class, 'index'])->name('areas.index');
+        Route::post('/areas', [TaskAreaController::class, 'store'])->name('areas.store');
+        Route::delete('/areas/{area}', [TaskAreaController::class, 'destroy'])->name('areas.destroy');
+    });
     Route::middleware('admin')->group(function () {
         Route::get('/users', [UserController::class, 'index'])->name('users.index');
         Route::get('/users/{user}', [UserController::class, 'show'])->name('users.show');

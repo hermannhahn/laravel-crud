@@ -10,24 +10,37 @@
 - [x] Docker environment configuration (Sail).
 - [x] Automated validation via Chrome DevTools (Login, Edit, Delete).
 - [x] Initial documentation in `docs/`.
-- [x] User and Permission Management System:
-    - [x] Database: Migration for `role` and `avatar` in `users` table.
-    - [x] Database: Migration for `user_permissions` table (module-based).
-    - [x] Backend: Admin Middleware and Authorization logic.
-    - [x] Backend: User Management Controller (Admin only).
-    - [x] Backend: Profile Controller (Avatar upload, personal data, password).
-    - [x] Backend: Logic to enforce monthly task limits.
-    - [x] Frontend: User Management pages (List, Edit Permissions).
-    - [x] Frontend: User Profile page.
-    - [x] Frontend: Conditional Navigation Menu based on roles/permissions.
-    - [x] Validation: Test Admin and Common User flows via Chrome DevTools.
-- [x] Advanced User Management (Admin):
-    - [x] Database: Migration to add `is_active` to `users` table.
-    - [x] Backend: Update `UserController` with `show`, `destroy`, and `toggleStatus` methods.
-    - [x] Backend: Global middleware to block inactive users.
-    - [x] Frontend: Update `Users/Index.vue` with status toggle and delete actions.
-    - [x] Frontend: Create `Users/Show.vue` for detailed user information.
-    - [x] Validation: Test account deactivation and deletion via Chrome DevTools.
+- [x] User and Permission Management System (Role-based).
+- [x] Advanced User Management (Admin can Activate/Deactivate/Delete).
+- [x] Multi-Tenant Task Management (Company vs Professional):
+    - [x] Database: Migration to add `user_type` to `users` table.
+    - [x] Database: Migration for `company_professional` (linking professionals to companies with permissions).
+    - [x] Database: Update `tasks` table to include `company_id` and `assigned_professional_id`.
+    - [x] Database: Create `task_responses` table for professional feedback.
+    - [x] Backend: Update Registration logic to include `user_type` selection.
+    - [x] Backend: Company Management Controller (for companies to manage "their" professionals).
+    - [x] Backend: Task Assignment and Response logic.
+    - [x] Backend: Advanced Policies (Company manages its tasks/team, Professional sees assigned tasks).
+    - [x] Frontend: Updated Register page with User Type selection.
+    - [x] Frontend: Company Dashboard (Manage Team, Assign Tasks).
+    - [x] Frontend: Professional Dashboard (View Assigned Tasks, Respond).
+- [x] Task Areas and Professional Specialties:
+    - [x] Database: Create `task_areas` table (Company-specific areas).
+    - [x] Database: Update `company_professional` pivot with `task_area_id`.
+    - [x] Database: Update `tasks` table with `task_area_id`.
+    - [x] Backend: `TaskAreaController` for companies to manage their areas.
+    - [x] Backend: Update `CompanyTeamController` to assign professionals to areas.
+    - [x] Backend: Filter `TaskController@index` pool by the professional's assigned area.
+    - [x] Frontend: `Company/Areas.vue` management page.
+    - [x] Frontend: Update `Team.vue` and `Tasks/Create.vue` with Area selection.
+- [x] Task "Claim/Release" Flow:
+    - [x] Backend: Update `TaskController@index` for pool visibility.
+    - [x] Backend: Implement `accept`, `release`, and `unassign` methods.
+    - [x] Frontend: Update `Tasks/Index.vue` with "Accept" button for unassigned tasks.
+    - [x] Frontend: Update `Tasks/Show.vue` with Accept/Release/Unassign actions.
+
+## 🚀 In Progress
+- [ ] Refinement and polish of the Multi-Tenant workflow.
 
 ## 📋 Pending
 - [ ] Improve visual feedback (toasts) in the frontend.

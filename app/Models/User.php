@@ -23,6 +23,7 @@ class User extends Authenticatable
         'password',
         'role',
         'is_active',
+        'user_type',
         'avatar_path',
     ];
 
@@ -50,9 +51,37 @@ class User extends Authenticatable
         ];
     }
 
+    // Tasks owned by this user (if company)
     public function tasks(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
-        return $this->hasMany(Task::class);
+        return $this->hasMany(Task::class, 'company_id');
+    }
+
+    // Tasks assigned to this user (if professional)
+    public function assignedTasks(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Task::class, 'professional_id');
+    }
+
+    // Areas defined by this company
+    public function taskAreas(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(TaskArea::class, 'company_id');
+    }
+
+    // Link between Companies and Professionals
+    public function professionals(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'company_professional', 'company_id', 'professional_id')
+            ->withPivot(['task_area_id', 'can_view_tasks', 'can_respond_tasks', 'can_edit_tasks'])
+            ->withTimestamps();
+    }
+
+    public function companies(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'company_professional', 'professional_id', 'company_id')
+            ->withPivot(['task_area_id', 'can_view_tasks', 'can_respond_tasks', 'can_edit_tasks'])
+            ->withTimestamps();
     }
 
     public function permissions(): \Illuminate\Database\Eloquent\Relations\HasMany
@@ -65,12 +94,23 @@ class User extends Authenticatable
         return $this->role === 'admin';
     }
 
+    public function isCompany(): bool
+    {
+        return $this->user_type === 'company';
+    }
+
+    public function isProfessional(): bool
+    {
+        return $this->user_type === 'professional';
+    }
+
     public function hasModulePermission(string $module, string $action): bool
     {
         if ($this->isAdmin()) {
             return true;
         }
 
+        // Global admin-defined permissions
         $permission = $this->permissions()->where('module', $module)->first();
 
         if (!$permission) {
