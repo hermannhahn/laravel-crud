@@ -21,7 +21,12 @@ class TaskPolicy
      */
     public function view(User $user, Task $task): bool
     {
-        return $user->id === $task->user_id;
+        // Admin, Company owner, or Assigned professional
+        return $user->isAdmin() || 
+               ($user->isCompany() && $task->company_id === $user->id) || 
+               ($user->isProfessional() && $task->professional_id === $user->id) ||
+               // Pool visibility: professional linked to company and area
+               ($user->isProfessional() && !$task->professional_id && $user->companyAreas()->where('task_areas.id', $task->task_area_id)->wherePivot('company_id', $task->company_id)->exists());
     }
 
     /**
@@ -29,7 +34,7 @@ class TaskPolicy
      */
     public function create(User $user): bool
     {
-        return true;
+        return $user->isCompany() || $user->isAdmin();
     }
 
     /**
@@ -37,7 +42,7 @@ class TaskPolicy
      */
     public function update(User $user, Task $task): bool
     {
-        return $user->id === $task->user_id;
+        return $user->isAdmin() || ($user->isCompany() && $task->company_id === $user->id);
     }
 
     /**
@@ -45,7 +50,7 @@ class TaskPolicy
      */
     public function delete(User $user, Task $task): bool
     {
-        return $user->id === $task->user_id;
+        return $user->isAdmin() || ($user->isCompany() && $task->company_id === $user->id);
     }
 
     /**
@@ -53,7 +58,7 @@ class TaskPolicy
      */
     public function restore(User $user, Task $task): bool
     {
-        return $user->id === $task->user_id;
+        return $user->isAdmin() || ($user->isCompany() && $task->company_id === $user->id);
     }
 
     /**
@@ -61,6 +66,6 @@ class TaskPolicy
      */
     public function forceDelete(User $user, Task $task): bool
     {
-        return $user->id === $task->user_id;
+        return $user->isAdmin() || ($user->isCompany() && $task->company_id === $user->id);
     }
 }

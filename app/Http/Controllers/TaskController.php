@@ -99,7 +99,7 @@ class TaskController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create(): Response|RedirectResponse
+    public function create(Request $request): Response|RedirectResponse
     {
         $user = Auth::user();
 
@@ -112,14 +112,24 @@ class TaskController extends Controller
                 ->with('error', 'Monthly task limit reached.');
         }
 
-        // Get professionals linked to this company
-        $professionals = $user->isCompany() 
-            ? $user->professionals()->get(['users.id', 'name']) 
-            : User::where('user_type', 'professional')->get(['id', 'name']);
+        // If admin, they can select a company. If company, it's themselves.
+        $targetCompanyId = $user->isAdmin() ? $request->company_id : $user->id;
 
-        $areas = $user->isCompany()
-            ? $user->taskAreas()->get(['id', 'name'])
-            : [];
+        // Get professionals linked to the target company
+        $professionals = [];
+        $areas = [];
+
+        if ($targetCompanyId) {
+            $targetCompany = User::find($targetCompanyId);
+            if ($targetCompany) {
+                $professionals = $targetCompany->professionals()->get(['users.id', 'name']);
+                $areas = $targetCompany->taskAreas()->get(['id', 'name']);
+            }
+        } elseif (!$user->isAdmin()) {
+            // This case shouldn't happen for companies but for safety:
+            $professionals = $user->professionals()->get(['users.id', 'name']);
+            $areas = $user->taskAreas()->get(['id', 'name']);
+        }
 
         $companies = $user->isAdmin()
             ? User::where('user_type', 'company')->get(['id', 'name'])
@@ -190,7 +200,7 @@ class TaskController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Task $task): Response
+    public function edit(Request $request, Task $task): Response
     {
         $user = Auth::user();
 
@@ -198,13 +208,17 @@ class TaskController extends Controller
             abort(403, 'Only the company owner can edit this task.');
         }
 
-        $professionals = $user->isCompany() 
-            ? $user->professionals()->get(['users.id', 'name']) 
-            : User::where('user_type', 'professional')->get(['id', 'name']);
+        // If admin reloads with a different company_id, use that. Otherwise use task's company.
+        $targetCompanyId = ($user->isAdmin() && $request->company_id) ? $request->company_id : $task->company_id;
+        $targetCompany = User::find($targetCompanyId);
 
-        $areas = ($user->isAdmin() || $user->isCompany())
-            ? TaskArea::where('company_id', $task->company_id)->get(['id', 'name'])
-            : [];
+        $professionals = [];
+        $areas = [];
+
+        if ($targetCompany) {
+            $professionals = $targetCompany->professionals()->get(['users.id', 'name']);
+            $areas = $targetCompany->taskAreas()->get(['id', 'name']);
+        }
 
         $companies = $user->isAdmin()
             ? User::where('user_type', 'company')->get(['id', 'name'])
