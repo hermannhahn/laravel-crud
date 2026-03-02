@@ -6,6 +6,7 @@ import DropdownLink from '@/Components/DropdownLink.vue';
 import NavLink from '@/Components/NavLink.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
 import { Link } from '@inertiajs/vue3';
+import Toast from '@/Components/Toast.vue';
 
 const showingNavigationDropdown = ref(false);
 </script>
@@ -37,8 +38,8 @@ const showingNavigationDropdown = ref(false);
                                 <NavLink :href="route('tasks.index')" :active="route().current('tasks.*')">
                                     Tasks
                                 </NavLink>
-                                <NavLink v-if="$page.props.auth.user.user_type === 'company'" :href="route('team.index')" :active="route().current('team.*')">
-                                    Team
+                                <NavLink v-if="$page.props.auth.user.user_type === 'company'" :href="route('professionals.index')" :active="route().current('professionals.*')">
+                                    Professionals
                                 </NavLink>
                                 <NavLink v-if="$page.props.auth.user.user_type === 'company'" :href="route('areas.index')" :active="route().current('areas.*')">
                                     Areas
@@ -160,8 +161,8 @@ const showingNavigationDropdown = ref(false);
                         >
                             Tasks
                         </ResponsiveNavLink>
-                        <ResponsiveNavLink v-if="$page.props.auth.user.user_type === 'company'" :href="route('team.index')" :active="route().current('team.*')">
-                            Team
+                        <ResponsiveNavLink v-if="$page.props.auth.user.user_type === 'company'" :href="route('professionals.index')" :active="route().current('professionals.*')">
+                            Professionals
                         </ResponsiveNavLink>
                         <ResponsiveNavLink v-if="$page.props.auth.user.user_type === 'company'" :href="route('areas.index')" :active="route().current('areas.*')">
                             Areas
@@ -220,5 +221,6 @@ const showingNavigationDropdown = ref(false);
                 <slot />
             </main>
         </div>
+        <Toast />
     </div>
 </template>

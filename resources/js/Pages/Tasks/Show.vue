@@ -88,14 +88,6 @@ const getStatusClass = (status: string) => {
 
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
-                <!-- Flash Messages -->
-                <div v-if="$page.props.flash.message" class="mb-4 p-4 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300 rounded-lg">
-                    {{ $page.props.flash.message }}
-                </div>
-                <div v-if="$page.props.flash.error" class="mb-4 p-4 bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300 rounded-lg">
-                    {{ $page.props.flash.error }}
-                </div>
-
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 text-gray-900 dark:text-gray-100">
                         <div class="flex flex-wrap justify-between items-start gap-4 mb-6">

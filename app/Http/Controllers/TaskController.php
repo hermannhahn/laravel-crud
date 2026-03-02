@@ -19,36 +19,76 @@ class TaskController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(): Response
+    public function index(Request $request): Response
     {
         $user = Auth::user();
+        $query = Task::query();
 
+        // Admin sees everything
         if ($user->isAdmin()) {
-            $tasks = Task::with(['company', 'professional'])->latest()->paginate(10);
+            $query->with(['company', 'professional', 'area']);
         } elseif ($user->isCompany()) {
-            $tasks = $user->tasks()->with('professional')->latest()->paginate(10);
+            $query->where('company_id', $user->id)->with(['professional', 'area']);
         } else {
-            // Professional: only see assigned tasks OR unassigned tasks from linked companies IN THEIR AREA
-            $links = $user->companies()->get();
+            // Professional: see assigned tasks OR unassigned tasks from linked companies IN THEIR AUTHORIZED AREAS
+            $userAreas = $user->companyAreas()->get();
             
-            $tasks = Task::where(function($query) use ($user, $links) {
+            $query->where(function($q) use ($user, $userAreas) {
                 // Already assigned to me
-                $query->where('professional_id', $user->id)
-                      // OR Unassigned but in my area for that company
-                      ->orWhere(function($q) use ($links) {
-                          foreach ($links as $link) {
-                              $q->orWhere(function($inner) use ($link) {
-                                  $inner->where('company_id', $link->id)
-                                        ->whereNull('professional_id')
-                                        ->where('task_area_id', $link->pivot->task_area_id);
+                $q->where('professional_id', $user->id)
+                      // OR Unassigned but matches an authorized area for that specific company
+                      ->orWhere(function($sub) use ($userAreas) {
+                          foreach ($userAreas as $area) {
+                              $sub->orWhere(function($inner) use ($area) {
+                                  $inner->where('company_id', $area->pivot->company_id)
+                                        ->where('task_area_id', $area->id)
+                                        ->whereNull('professional_id');
                               });
                           }
                       });
-            })->with(['company', 'area'])->latest()->paginate(10);
+            })->with(['company', 'area']);
+        }
+
+        // --- FILTERS ---
+        if ($request->filled('search')) {
+            $query->where(function($q) use ($request) {
+                $q->where('title', 'like', '%' . $request->search . '%')
+                  ->orWhere('description', 'like', '%' . $request->search . '%');
+            });
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->filled('area_id')) {
+            $query->where('task_area_id', $request->area_id);
+        }
+
+        // --- SORTING ---
+        $sort = $request->input('sort', 'latest');
+        match($sort) {
+            'due_date' => $query->orderByRaw('due_date IS NULL, due_date ASC'),
+            'oldest' => $query->oldest(),
+            default => $query->latest(),
+        };
+
+        $tasks = $query->paginate(10)->withQueryString();
+
+        // Load areas for the filter dropdown (relevant to the current user context)
+        $filterAreas = [];
+        if ($user->isCompany()) {
+            $filterAreas = $user->taskAreas()->get(['id', 'name']);
+        } elseif ($user->isProfessional()) {
+            $filterAreas = $user->companyAreas()->get(['task_areas.id', 'task_areas.name'])->unique('id');
+        } elseif ($user->isAdmin()) {
+            $filterAreas = TaskArea::all(['id', 'name']);
         }
 
         return Inertia::render('Tasks/Index', [
             'tasks' => TaskResource::collection($tasks),
+            'filters' => $request->only(['search', 'status', 'area_id', 'sort']),
+            'availableAreas' => $filterAreas,
             'can' => [
                 'create' => $user->isCompany() || $user->isAdmin(),
                 'manage_team' => $user->isCompany(),

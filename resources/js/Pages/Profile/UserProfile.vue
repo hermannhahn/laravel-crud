@@ -56,7 +56,12 @@ const updatePassword = () => {
                 <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
                     <section class="max-w-xl">
                         <header>
-                            <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">Profile Information</h2>
+                            <div class="flex justify-between items-center">
+                                <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">Profile Information</h2>
+                                <span class="bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-400 px-3 py-1 rounded-full text-sm font-bold border border-gray-200 dark:border-gray-700">
+                                    User ID: {{ user.id }}
+                                </span>
+                            </div>
                             <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">Update your profile's information, email address, and avatar.</p>
                         </header>
 

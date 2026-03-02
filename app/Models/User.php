@@ -73,14 +73,22 @@ class User extends Authenticatable
     public function professionals(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
         return $this->belongsToMany(User::class, 'company_professional', 'company_id', 'professional_id')
-            ->withPivot(['task_area_id', 'can_view_tasks', 'can_respond_tasks', 'can_edit_tasks'])
+            ->withPivot(['can_view_tasks', 'can_respond_tasks', 'can_edit_tasks'])
             ->withTimestamps();
     }
 
     public function companies(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
         return $this->belongsToMany(User::class, 'company_professional', 'professional_id', 'company_id')
-            ->withPivot(['task_area_id', 'can_view_tasks', 'can_respond_tasks', 'can_edit_tasks'])
+            ->withPivot(['can_view_tasks', 'can_respond_tasks', 'can_edit_tasks'])
+            ->withTimestamps();
+    }
+
+    // New: Link to areas in the context of company-professional partnership
+    public function companyAreas(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(TaskArea::class, 'company_professional_area', 'professional_id', 'task_area_id')
+            ->withPivot('company_id')
             ->withTimestamps();
     }
 

@@ -2,8 +2,10 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, router } from '@inertiajs/vue3';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
+import TextInput from '@/Components/TextInput.vue';
+import { ref, watch } from 'vue';
 
-defineProps<{
+const props = defineProps<{
     tasks: {
         data: Array<{
             id: number;
@@ -19,10 +21,56 @@ defineProps<{
         }>;
         links: Array<any>;
     };
+    filters: {
+        search?: string;
+        status?: string;
+        area_id?: string | number;
+        sort?: string;
+    };
+    availableAreas: Array<{ id: number; name: string }>;
     can: {
         create: boolean;
     };
 }>();
+
+const search = ref(props.filters.search || '');
+const status = ref(props.filters.status || '');
+const area_id = ref(props.filters.area_id || '');
+const sort = ref(props.filters.sort || 'latest');
+
+// Simple native debounce function
+const debounce = (fn: Function, delay: number) => {
+    let timeoutId: any;
+    return (...args: any[]) => {
+        if (timeoutId) clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => {
+            fn(...args);
+        }, delay);
+    };
+};
+
+const updateFilters = debounce(() => {
+    router.get(route('tasks.index'), {
+        search: search.value,
+        status: status.value,
+        area_id: area_id.value,
+        sort: sort.value,
+    }, {
+        preserveState: true,
+        replace: true,
+    });
+}, 300);
+
+watch([search, status, area_id, sort], () => {
+    updateFilters();
+});
+
+const resetFilters = () => {
+    search.value = '';
+    status.value = '';
+    area_id.value = '';
+    sort.value = 'latest';
+};
 
 const deleteTask = (id: number) => {
     if (confirm('Are you sure you want to delete this task?')) {
@@ -54,12 +102,40 @@ const getStatusClass = (status: string) => {
 
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                <!-- Flash Messages -->
-                <div v-if="$page.props.flash.message" class="mb-4 p-4 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300 rounded-lg">
-                    {{ $page.props.flash.message }}
-                </div>
-                <div v-if="$page.props.flash.error" class="mb-4 p-4 bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300 rounded-lg">
-                    {{ $page.props.flash.error }}
+                <!-- Filter Bar -->
+                <div class="mb-6 p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm flex flex-wrap items-center gap-4">
+                    <div class="flex-1 min-w-[200px]">
+                        <TextInput 
+                            v-model="search" 
+                            type="text" 
+                            placeholder="Search tasks..." 
+                            class="w-full text-sm"
+                        />
+                    </div>
+                    
+                    <select v-model="status" class="text-sm border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 rounded-md shadow-sm">
+                        <option value="">All Statuses</option>
+                        <option value="pending">Pending</option>
+                        <option value="in_progress">In Progress</option>
+                        <option value="completed">Completed</option>
+                    </select>
+
+                    <select v-model="area_id" class="text-sm border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 rounded-md shadow-sm">
+                        <option value="">All Areas</option>
+                        <option v-for="area in availableAreas" :key="area.id" :value="area.id">
+                            {{ area.name }}
+                        </option>
+                    </select>
+
+                    <select v-model="sort" class="text-sm border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 rounded-md shadow-sm">
+                        <option value="latest">Latest</option>
+                        <option value="oldest">Oldest</option>
+                        <option value="due_date">Due Date</option>
+                    </select>
+
+                    <button @click="resetFilters" class="text-xs text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                        Reset
+                    </button>
                 </div>
 
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">

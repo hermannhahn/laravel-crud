@@ -48,11 +48,6 @@ const deleteUser = (id: number) => {
 
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                <!-- Flash Messages -->
-                <div v-if="$page.props.flash.message" class="mb-4 p-4 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300 rounded-lg">
-                    {{ $page.props.flash.message }}
-                </div>
-
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 text-gray-900 dark:text-gray-100">
                         <div class="overflow-x-auto">

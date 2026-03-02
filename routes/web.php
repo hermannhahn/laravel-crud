@@ -9,7 +9,7 @@ use Inertia\Inertia;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserPermissionController;
 use App\Http\Controllers\UserProfileController;
-use App\Http\Controllers\CompanyTeamController;
+use App\Http\Controllers\CompanyProfessionalController;
 use App\Http\Controllers\TaskAreaController;
 
 Route::get('/', function () {
@@ -41,17 +41,18 @@ Route::middleware('auth')->group(function () {
     Route::post('/tasks/{task}/release', [TaskController::class, 'release'])->name('tasks.release');
     Route::post('/tasks/{task}/unassign', [TaskController::class, 'unassign'])->name('tasks.unassign');
 
-    // Company Team and Area management
+    // Company Professionals and Area management
     Route::middleware('auth')->group(function () {
-        Route::get('/team', [CompanyTeamController::class, 'index'])->name('team.index');
-        Route::post('/team/add', [CompanyTeamController::class, 'addProfessional'])->name('team.add');
-        Route::delete('/team/{user}', [CompanyTeamController::class, 'removeProfessional'])->name('team.remove');
-        Route::patch('/team/{user}/permissions', [CompanyTeamController::class, 'updatePermissions'])->name('team.update-permissions');
+        Route::get('/professionals', [CompanyProfessionalController::class, 'index'])->name('professionals.index');
+        Route::post('/professionals/add', [CompanyProfessionalController::class, 'addProfessional'])->name('professionals.add');
+        Route::delete('/professionals/{user}', [CompanyProfessionalController::class, 'removeProfessional'])->name('professionals.remove');
+        Route::patch('/professionals/{user}/permissions', [CompanyProfessionalController::class, 'updatePermissions'])->name('professionals.update-permissions');
         
         Route::get('/areas', [TaskAreaController::class, 'index'])->name('areas.index');
         Route::post('/areas', [TaskAreaController::class, 'store'])->name('areas.store');
         Route::delete('/areas/{area}', [TaskAreaController::class, 'destroy'])->name('areas.destroy');
     });
+
     Route::middleware('admin')->group(function () {
         Route::get('/users', [UserController::class, 'index'])->name('users.index');
         Route::get('/users/{user}', [UserController::class, 'show'])->name('users.show');
