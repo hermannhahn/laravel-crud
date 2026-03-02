@@ -14,6 +14,8 @@ This file contains instructions, standards, and critical session data for the La
 | 2 | Gemini Admin | `gemini@gemini` | `gemini123` | `admin` | `professional` |
 | 4 | Tech Corp | `company@tech.com` | `password` | `user` | `company` |
 | 5 | John Pro | `pro@john.com` | `password` | `user` | `professional` |
+| 6 | Global Services | `contact@globalservices.com` | `password` | `user` | `company` |
+| 7 | Alice Dev | `alice@dev.com` | `password` | `user` | `professional` |
 
 ## 🏗️ Multi-Tenant Architecture
 - **User Types:** `company` (creates tasks) and `professional` (executes tasks).
@@ -25,9 +27,9 @@ This file contains instructions, standards, and critical session data for the La
     - Notifications: Global Toast system replaces static flash messages.
 
 ## 📍 Project State (Last Stopped)
-- **Status:** General Refinement (UI/UX) completed.
-- **Last Action:** Implemented filtering, sorting, and global Toast notifications. Refined admin task creation.
-- **Next Steps:** Automated integration testing (Pest) and final production readiness checks.
+- **Status:** Multi-company and Multi-area support validated.
+- **Last Action:** Registered "Global Services" (ID 6) and "Alice Dev" (ID 7). Alice is linked to both companies in different areas.
+- **Next Steps:** Implement search and sorting refinements if needed.
 
 ## 🛠️ Workflow Reminders
 1. **Testing:** Use `chrome-devtools` extension. Re-use existing tabs/windows.
