@@ -1,18 +1,18 @@
-# CRUD Laravel - Planejamento (TODO)
+# Laravel CRUD - Planning (TODO)
 
-## 📅 Concluído
-- [x] Configuração inicial do projeto (Laravel 12 + Inertia + Vue 3).
-- [x] Implementação de Model, Migration, Factory e Seeder para Tasks.
-- [x] Implementação de TaskController com métodos RESTful.
-- [x] Implementação de TaskPolicy para autorização (segurança).
-- [x] Correção do trait `AuthorizesRequests` no Controller base.
-- [x] Versionamento do projeto completo no GitHub.
-- [x] Configuração do ambiente Docker (Sail).
-- [x] Validação automatizada via Chrome DevTools (Login, Edit, Delete).
-- [x] Documentação inicial em `docs/`.
+## 📅 Completed
+- [x] Initial project setup (Laravel 12 + Inertia + Vue 3).
+- [x] Implementation of Model, Migration, Factory, and Seeder for Tasks.
+- [x] Implementation of TaskController with RESTful methods.
+- [x] Implementation of TaskPolicy for authorization (security).
+- [x] Fix `AuthorizesRequests` trait in base Controller.
+- [x] Full project versioning on GitHub.
+- [x] Docker environment configuration (Sail).
+- [x] Automated validation via Chrome DevTools (Login, Edit, Delete).
+- [x] Initial documentation in `docs/`.
 
-## 📋 Pendente
-- [ ] Melhorar feedbacks visuais (toasts) no frontend.
-- [ ] Adicionar filtros de busca na listagem de tarefas.
-- [ ] Implementar ordenação por data de vencimento.
-- [ ] Criar testes de integração automatizados (Pest).
+## 📋 Pending
+- [ ] Improve visual feedback (toasts) in the frontend.
+- [ ] Add search filters to the task listing.
+- [ ] Implement sorting by due date.
+- [ ] Create automated integration tests (Pest).
