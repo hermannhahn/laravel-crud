@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, useForm, Link } from '@inertiajs/vue3';
+import { Head, useForm, Link, router } from '@inertiajs/vue3';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
@@ -15,6 +15,10 @@ const props = defineProps<{
         id: number;
         name: string;
     }>;
+    companies: Array<{
+        id: number;
+        name: string;
+    }>;
 }>();
 
 const form = useForm({
@@ -24,7 +28,17 @@ const form = useForm({
     due_date: '',
     professional_id: '',
     task_area_id: '',
+    company_id: '',
 });
+
+const onCompanyChange = () => {
+    if (form.company_id) {
+        router.reload({
+            data: { company_id: form.company_id },
+            only: ['areas', 'professionals'],
+        });
+    }
+};
 
 const submit = () => {
     form.post(route('tasks.store'), {
@@ -46,6 +60,24 @@ const submit = () => {
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 text-gray-900 dark:text-gray-100 max-w-xl">
                         <form @submit.prevent="submit">
+                            <!-- Admin only: Company Selection -->
+                            <div v-if="$page.props.auth.user.role === 'admin'" class="mb-6 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg border border-indigo-100 dark:border-indigo-900">
+                                <InputLabel for="company_id" value="Owner Company (Admin only)" />
+                                <select
+                                    id="company_id"
+                                    v-model="form.company_id"
+                                    @change="onCompanyChange"
+                                    class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm"
+                                    required
+                                >
+                                    <option value="" disabled>Select company...</option>
+                                    <option v-for="company in companies" :key="company.id" :value="company.id">
+                                        {{ company.name }}
+                                    </option>
+                                </select>
+                                <InputError :message="form.errors.company_id" class="mt-2" />
+                            </div>
+
                             <div>
                                 <InputLabel for="title" value="Title" />
                                 <TextInput

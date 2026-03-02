@@ -7,6 +7,7 @@ use App\Http\Requests\UpdateTaskRequest;
 use App\Http\Resources\TaskResource;
 use App\Models\Task;
 use App\Models\User;
+use App\Models\TaskArea;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -80,9 +81,14 @@ class TaskController extends Controller
             ? $user->taskAreas()->get(['id', 'name'])
             : [];
 
+        $companies = $user->isAdmin()
+            ? User::where('user_type', 'company')->get(['id', 'name'])
+            : [];
+
         return Inertia::render('Tasks/Create', [
             'professionals' => $professionals,
             'areas' => $areas,
+            'companies' => $companies,
         ]);
     }
 
@@ -103,7 +109,13 @@ class TaskController extends Controller
         }
 
         $validated = $request->validated();
-        $validated['company_id'] = $user->id; // Owner is the company
+        
+        if ($user->isAdmin()) {
+            $validated['company_id'] = $request->company_id ?? $user->id;
+            $validated['task_area_id'] = $request->task_area_id;
+        } else {
+            $validated['company_id'] = $user->id; // Owner is the company
+        }
 
         Task::create($validated);
 
@@ -150,14 +162,19 @@ class TaskController extends Controller
             ? $user->professionals()->get(['users.id', 'name']) 
             : User::where('user_type', 'professional')->get(['id', 'name']);
 
-        $areas = $user->isCompany()
-            ? $user->taskAreas()->get(['id', 'name'])
+        $areas = ($user->isAdmin() || $user->isCompany())
+            ? TaskArea::where('company_id', $task->company_id)->get(['id', 'name'])
+            : [];
+
+        $companies = $user->isAdmin()
+            ? User::where('user_type', 'company')->get(['id', 'name'])
             : [];
 
         return Inertia::render('Tasks/Edit', [
             'task' => new TaskResource($task),
             'professionals' => $professionals,
             'areas' => $areas,
+            'companies' => $companies,
         ]);
     }
 
@@ -172,7 +189,12 @@ class TaskController extends Controller
             abort(403);
         }
 
-        $task->update($request->validated());
+        $validated = $request->validated();
+        if ($user->isAdmin() && $request->has('company_id')) {
+            $validated['company_id'] = $request->company_id;
+        }
+
+        $task->update($validated);
 
         return redirect()->route('tasks.index')
             ->with('message', 'Task updated successfully.');
