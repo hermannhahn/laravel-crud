@@ -16,7 +16,7 @@ const props = defineProps<{
             status: string;
             due_date: string;
             professional: { id: number | null };
-            area: { id: number | null };
+            profession: { id: number | null };
             service: { id: number | null };
             company: { id: number | null };
         }
@@ -25,15 +25,15 @@ const props = defineProps<{
         id: number;
         name: string;
     }>;
-    areas: Array<{
+    professions: Array<{
         id: number;
         name: string;
     }>;
     services: Array<{
         id: number;
         title: string;
-        task_area_id: number;
-        price: number;
+        profession_id: number;
+        payout: number;
     }>;
     companies: Array<{
         id: number;
@@ -47,21 +47,21 @@ const form = useForm({
     status: props.task.data.status,
     due_date: props.task.data.due_date,
     professional_id: props.task.data.professional.id || '',
-    task_area_id: props.task.data.area.id || '' as number | '',
+    profession_id: props.task.data.profession.id || '' as number | '',
     service_id: props.task.data.service.id || '' as number | '',
     company_id: props.task.data.company.id || '',
 });
 
 const filteredServices = computed(() => {
-    if (!form.task_area_id) return [];
-    return props.services.filter(s => s.task_area_id === Number(form.task_area_id));
+    if (!form.profession_id) return [];
+    return props.services.filter(s => s.profession_id === Number(form.profession_id));
 });
 
 const onCompanyChange = () => {
     if (form.company_id) {
         router.reload({
             data: { company_id: form.company_id },
-            only: ['areas', 'professionals', 'services'],
+            only: ['professions', 'professionals', 'services'],
         });
     }
 };
@@ -111,20 +111,20 @@ const submit = () => {
 
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                                 <div>
-                                    <InputLabel for="task_area_id" value="Task Area" />
+                                    <InputLabel for="profession_id" value="Profession" />
                                     <select
-                                        id="task_area_id"
-                                        v-model="form.task_area_id"
+                                        id="profession_id"
+                                        v-model="form.profession_id"
                                         @change="form.service_id = ''"
                                         class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm"
                                         required
                                     >
-                                        <option value="" disabled>Select area...</option>
-                                        <option v-for="area in areas" :key="area.id" :value="area.id">
-                                            {{ area.name }}
+                                        <option value="" disabled>Select profession...</option>
+                                        <option v-for="prof in professions" :key="prof.id" :value="prof.id">
+                                            {{ prof.name }}
                                         </option>
                                     </select>
-                                    <InputError :message="form.errors.task_area_id" class="mt-2" />
+                                    <InputError :message="form.errors.profession_id" class="mt-2" />
                                 </div>
 
                                 <div>
@@ -134,12 +134,12 @@ const submit = () => {
                                         v-model="form.service_id"
                                         @change="onServiceChange"
                                         class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm"
-                                        :disabled="!form.task_area_id"
+                                        :disabled="!form.profession_id"
                                         required
                                     >
                                         <option value="" disabled>Select service...</option>
                                         <option v-for="service in filteredServices" :key="service.id" :value="service.id">
-                                            {{ service.title }} (Payout: ${{ service.price }})
+                                            {{ service.title }} (Payout: ${{ service.payout }})
                                         </option>
                                     </select>
                                     <InputError :message="form.errors.service_id" class="mt-2" />

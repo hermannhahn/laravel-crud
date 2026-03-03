@@ -8,19 +8,6 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 
 const props = defineProps<{
-    task: {
-        data: {
-            id: number;
-            title: string;
-            description: string;
-            status: string;
-            due_date: string;
-            professional: { id: number | null };
-            profession: { id: number | null };
-            service: { id: number | null };
-            company: { id: number | null };
-        }
-    };
     professionals: Array<{
         id: number;
         name: string;
@@ -42,14 +29,14 @@ const props = defineProps<{
 }>();
 
 const form = useForm({
-    title: props.task.data.title,
-    description: props.task.data.description,
-    status: props.task.data.status,
-    due_date: props.task.data.due_date,
-    professional_id: props.task.data.professional.id || '',
-    profession_id: props.task.data.profession.id || '' as number | '',
-    service_id: props.task.data.service.id || '' as number | '',
-    company_id: props.task.data.company.id || '',
+    title: '',
+    description: '',
+    status: 'pending',
+    due_date: '',
+    professional_id: '',
+    profession_id: '' as number | '',
+    service_id: '' as number | '',
+    company_id: '',
 });
 
 const filteredServices = computed(() => {
@@ -74,16 +61,18 @@ const onServiceChange = () => {
 };
 
 const submit = () => {
-    form.put(route('tasks.update', props.task.data.id));
+    form.post(route('tasks.store'), {
+        onFinish: () => form.reset(),
+    });
 };
 </script>
 
 <template>
-    <Head title="Edit Task" />
+    <Head title="Create Task" />
 
     <AuthenticatedLayout>
         <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">Edit Task</h2>
+            <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">Create Task</h2>
         </template>
 
         <div class="py-12">
@@ -192,7 +181,7 @@ const submit = () => {
                                     Cancel
                                 </Link>
                                 <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                                    Update Task
+                                    Create Task
                                 </PrimaryButton>
                             </div>
                         </form>
