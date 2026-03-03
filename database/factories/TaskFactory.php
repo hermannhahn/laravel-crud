@@ -17,7 +17,13 @@ class TaskFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'company_id' => \App\Models\User::factory()->company(),
+            'profession_id' => \App\Models\Profession::factory(),
+            'service_id' => \App\Models\Service::factory(),
+            'title' => $this->faker->sentence(),
+            'description' => $this->faker->paragraph(),
+            'status' => 'pending',
+            'due_date' => $this->faker->dateTimeBetween('now', '+1 month'),
         ];
     }
 }

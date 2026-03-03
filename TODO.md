@@ -29,8 +29,5 @@
     - [x] Notifications: Implement a global Toast system for success/error messages.
     - [x] Styling: General layout polish (empty states, buttons, transitions).
 
-## 🚀 In Progress
-- [ ] Final polishing and edge case testing.
-
-## 📋 Pending
-- [ ] Create automated integration tests (Pest).
+- [x] Create automated integration tests (Pest).
+- [ ] Final polishing and documentation review.
