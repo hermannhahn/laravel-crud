@@ -2,9 +2,9 @@
 
 A professional task management system with multi-tenant support, featuring **Laravel 12**, **Inertia.js (Vue 3)**, **Tailwind CSS**, and **Docker (Sail)**.
 
-## 🚀 Installation Guide
+## 🚀 Installation & Setup
 
-Follow these steps to set up the project locally:
+Follow these steps to get the system running locally:
 
 1.  **Clone the repository:**
     ```bash
@@ -12,62 +12,50 @@ Follow these steps to set up the project locally:
     cd laravel-crud
     ```
 
-2.  **Install PHP dependencies:**
+2.  **Install dependencies:**
     ```bash
     composer install
+    npm install
     ```
 
-3.  **Configure Environment:**
+3.  **Prepare environment:**
     ```bash
     cp .env.example .env
     php artisan key:generate
     ```
 
-4.  **Install Node dependencies:**
-    ```bash
-    npm install
-    ```
-
-5.  **Start the environment:**
+4.  **Start the server:**
     ```bash
     npm run start
     ```
 
-6.  **Run Migrations:**
+5.  **Initialize Database & Assets:**
     ```bash
     npm run migrate
-    ```
-
-7.  **Build Frontend:**
-    ```bash
     npm run build
     ```
 
-8.  **First Access (Administrator Registration):**
-    Open `http://localhost/register` in your browser. 
-    **Important:** The **first user registered** in a fresh database is automatically granted the **System Administrator** role with full access.
+6.  **Access the System:**
+    Open [http://localhost](http://localhost) in your browser.
 
-## 🛠️ Commands
+    *Note: The **first user registered** at `http://localhost/register` will automatically become the **System Administrator**.*
 
-- `npm run start`: Starts the Docker containers in the background.
-- `npm run stop`: Stops the Docker containers.
-- `npm run migrate`: Runs the database migrations.
-- `npm run build`: Compiles the frontend assets for production.
-- `npm run dev`: Starts the Vite development server.
+## 🛠️ Management Commands
+
+- `npm run start`: Starts the system containers.
+- `npm run stop`: Stops the system.
+- `npm run migrate`: Updates database structure.
+- `npm run build`: Finalizes interface components.
 
 ## 🔑 User Roles
 
-- **System Administrator:** Created during first registration. Full visibility of all tasks, users, and financial data.
-- **Company:** Can create tasks, manage professions, and authorize professionals.
-- **Professional:** Can accept tasks, post updates, and track their earnings.
+- **System Administrator:** Full platform visibility and user management.
+- **Company:** Create tasks and manage service offerings.
+- **Professional:** Execute tasks and track earnings.
 
-## 💰 Financial System
+## 💰 Financial Tracking
 
-The system includes a dedicated **Finance** module:
-- **Companies:** Track total spending on completed tasks.
-- **Professionals:** Monitor total earnings and monthly performance.
-- **Admins:** Global view of the entire platform's financial volume.
-
-## 📂 Documentation
-- [Technical Details](./docs/technical.md)
-- [Project Goals (TODO)](./TODO.md)
+The system includes integrated financial monitoring:
+- **Companies:** View total project expenditures.
+- **Professionals:** Track monthly and lifetime earnings.
+- **Admins:** Oversee total platform financial volume.
