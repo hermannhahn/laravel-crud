@@ -20,13 +20,25 @@ class DashboardController extends Controller
 
         $days = collect(range(4, 0))->map(fn($i) => Carbon::today()->subDays($i));
 
-        if ($user->isCompany()) {
+        if ($user->isAdmin()) {
+            $data['stats'] = [
+                'pending' => Task::where('status', '!=', 'completed')->count(),
+                'completed' => Task::where('status', 'completed')->count(),
+            ];
+
+            $data['chartData'] = $days->map(function ($date) {
+                return [
+                    'date' => $date->format('M d'),
+                    'created' => Task::whereDate('created_at', $date)->count(),
+                    'completed' => Task::where('status', 'completed')
+                        ->whereDate('completed_at', $date)
+                        ->count(),
+                ];
+            });
+        } elseif ($user->isCompany()) {
             $data['stats'] = [
                 'pending' => Task::where('company_id', $user->id)->where('status', '!=', 'completed')->count(),
-                'completed_today' => Task::where('company_id', $user->id)
-                    ->where('status', 'completed')
-                    ->whereDate('completed_at', Carbon::today())
-                    ->count(),
+                'completed' => Task::where('company_id', $user->id)->where('status', 'completed')->count(),
             ];
 
             $data['chartData'] = $days->map(function ($date) use ($user) {

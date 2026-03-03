@@ -24,8 +24,7 @@ const props = defineProps<{
     }>;
     stats?: {
         pending: number;
-        completed?: number;
-        completed_today?: number;
+        completed: number;
     };
 }>();
 
@@ -97,14 +96,8 @@ const professionalChartData = computed(() => ({
                         <div class="text-3xl font-bold dark:text-white">{{ stats.pending }}</div>
                     </div>
 
-                    <!-- Company: Completed Today -->
-                    <div v-if="user.user_type === 'company'" class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border-l-4 border-green-500">
-                        <div class="text-sm text-gray-500 dark:text-gray-400 uppercase font-bold">Completed Tasks Today</div>
-                        <div class="text-3xl font-bold dark:text-white">{{ stats.completed_today }}</div>
-                    </div>
-
-                    <!-- Professional: Total Completed -->
-                    <div v-if="user.user_type === 'professional'" class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border-l-4 border-green-500">
+                    <!-- Completed Tasks (Shared Label for simplicity) -->
+                    <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border-l-4 border-green-500">
                         <div class="text-sm text-gray-500 dark:text-gray-400 uppercase font-bold">Total Completed Tasks</div>
                         <div class="text-3xl font-bold dark:text-white">{{ stats.completed }}</div>
                     </div>
@@ -115,11 +108,12 @@ const professionalChartData = computed(() => ({
                     <div class="p-6 text-gray-900 dark:text-gray-100">
                         <h3 class="text-lg font-medium mb-6">
                             Performance (Last 5 Days)
+                            <span v-if="user.role === 'admin'" class="text-xs text-gray-400 ml-2 uppercase">(Global Data)</span>
                         </h3>
                         
                         <div class="h-[300px]">
                             <Bar 
-                                v-if="user.user_type === 'company'"
+                                v-if="user.user_type === 'company' || user.role === 'admin'"
                                 :data="companyChartData"
                                 :options="chartOptions"
                             />
