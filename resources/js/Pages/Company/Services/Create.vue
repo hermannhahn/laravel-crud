@@ -7,7 +7,7 @@ import TextInput from '@/Components/TextInput.vue';
 import InputError from '@/Components/InputError.vue';
 
 const props = defineProps<{
-    areas: Array<{ id: number; name: string }>;
+    professions: Array<{ id: number; name: string }>;
     companies: Array<{ id: number; name: string }>;
     selectedCompanyId?: number | string;
 }>();
@@ -15,15 +15,15 @@ const props = defineProps<{
 const form = useForm({
     title: '',
     description: '',
-    price: '',
-    task_area_id: '',
+    payout: '',
+    profession_id: '',
     company_id: props.selectedCompanyId || '',
 });
 
 const onCompanyChange = () => {
     router.reload({
         data: { company_id: form.company_id },
-        only: ['areas'],
+        only: ['professions'],
     });
 };
 
@@ -64,22 +64,22 @@ const submit = () => {
                                     <InputError :message="form.errors.company_id" class="mt-2" />
                                 </div>
 
-                                <!-- Area Selection -->
+                                <!-- Profession Selection -->
                                 <div>
-                                    <InputLabel for="task_area_id" value="Area" />
+                                    <InputLabel for="profession_id" value="Profession" />
                                     <select
-                                        id="task_area_id"
-                                        v-model="form.task_area_id"
+                                        id="profession_id"
+                                        v-model="form.profession_id"
                                         class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm"
                                         required
                                         :disabled="!form.company_id && $page.props.auth.user.role === 'admin'"
                                     >
-                                        <option value="" disabled>Select area...</option>
-                                        <option v-for="area in areas" :key="area.id" :value="area.id">
-                                            {{ area.name }}
+                                        <option value="" disabled>Select profession...</option>
+                                        <option v-for="prof in professions" :key="prof.id" :value="prof.id">
+                                            {{ prof.name }}
                                         </option>
                                     </select>
-                                    <InputError :message="form.errors.task_area_id" class="mt-2" />
+                                    <InputError :message="form.errors.profession_id" class="mt-2" />
                                 </div>
 
                                 <!-- Title -->
@@ -91,7 +91,7 @@ const submit = () => {
                                         class="mt-1 block w-full"
                                         v-model="form.title"
                                         required
-                                        placeholder="e.g., Website Maintenance"
+                                        placeholder="e.g., General Consultation"
                                     />
                                     <InputError :message="form.errors.title" class="mt-2" />
                                 </div>
@@ -110,16 +110,16 @@ const submit = () => {
 
                                 <!-- Payout -->
                                 <div>
-                                    <InputLabel for="price" value="Professional Payout (USD)" />
+                                    <InputLabel for="payout" value="Professional Payout (USD)" />
                                     <TextInput
-                                        id="price"
+                                        id="payout"
                                         type="number"
                                         step="0.01"
                                         class="mt-1 block w-full"
-                                        v-model="form.price"
+                                        v-model="form.payout"
                                         required
                                     />
-                                    <InputError :message="form.errors.price" class="mt-2" />
+                                    <InputError :message="form.errors.payout" class="mt-2" />
                                 </div>
                             </div>
 

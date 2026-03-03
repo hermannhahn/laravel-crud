@@ -3,7 +3,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, router } from '@inertiajs/vue3';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
-import { ref, watch } from 'vue';
+import { ref, watch, computed } from 'vue';
 
 const props = defineProps<{
     tasks: {
@@ -15,8 +15,8 @@ const props = defineProps<{
             status_label: string;
             due_date_formatted: string;
             company: { name: string };
-            area: { id: number | null, name: string | null };
-            service: { id: number | null, title: string | null, price: number | null };
+            profession: { id: number | null, name: string | null };
+            service: { id: number | null, title: string | null, payout: number | null };
             professional: { id: number | null, name: string | null };
             can: { update: boolean; delete: boolean; respond: boolean };
         }>;
@@ -25,10 +25,10 @@ const props = defineProps<{
     filters: {
         search?: string;
         status?: string;
-        area_id?: string | number;
+        profession_id?: string;
         sort?: string;
     };
-    availableAreas: Array<{ id: number; name: string }>;
+    availableProfessions: Array<{ id: number; name: string }>;
     can: {
         create: boolean;
     };
@@ -36,47 +36,30 @@ const props = defineProps<{
 
 const search = ref(props.filters.search || '');
 const status = ref(props.filters.status || '');
-const area_id = ref(props.filters.area_id || '');
+const profession_id = ref(props.filters.profession_id || '');
 const sort = ref(props.filters.sort || 'latest');
 
-// Simple native debounce function
-const debounce = (fn: Function, delay: number) => {
-    let timeoutId: any;
-    return (...args: any[]) => {
-        if (timeoutId) clearTimeout(timeoutId);
-        timeoutId = setTimeout(() => {
-            fn(...args);
-        }, delay);
-    };
-};
-
-const updateFilters = debounce(() => {
+const updateFilters = () => {
     router.get(route('tasks.index'), {
         search: search.value,
         status: status.value,
-        area_id: area_id.value,
+        profession_id: profession_id.value,
         sort: sort.value,
     }, {
         preserveState: true,
         replace: true,
     });
-}, 300);
+};
 
-watch([search, status, area_id, sort], () => {
+watch([search, status, profession_id, sort], () => {
     updateFilters();
 });
 
 const resetFilters = () => {
     search.value = '';
     status.value = '';
-    area_id.value = '';
+    profession_id.value = '';
     sort.value = 'latest';
-};
-
-const deleteTask = (id: number) => {
-    if (confirm('Are you sure you want to delete this task?')) {
-        router.delete(route('tasks.destroy', id));
-    }
 };
 
 const getStatusClass = (status: string) => {
@@ -85,6 +68,12 @@ const getStatusClass = (status: string) => {
         'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300': status === 'in_progress',
         'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300': status === 'completed',
     };
+};
+
+const deleteTask = (id: number) => {
+    if (confirm('Are you sure you want to delete this task?')) {
+        router.delete(route('tasks.destroy', id));
+    }
 };
 </script>
 
@@ -102,47 +91,51 @@ const getStatusClass = (status: string) => {
         </template>
 
         <div class="py-12">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                <!-- Filter Bar -->
-                <div class="mb-6 p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm flex flex-wrap items-center gap-4">
-                    <div class="flex-1 min-w-[200px]">
-                        <TextInput 
-                            v-model="search" 
-                            type="text" 
-                            placeholder="Search tasks..." 
-                            class="w-full text-sm"
-                        />
+            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+                
+                <!-- Filters -->
+                <div class="p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm space-y-4">
+                    <div class="flex flex-wrap items-center gap-4">
+                        <div class="flex-1 min-w-[200px]">
+                            <TextInput 
+                                v-model="search" 
+                                type="text" 
+                                placeholder="Search tasks, professionals, companies..." 
+                                class="w-full text-sm"
+                            />
+                        </div>
+                        
+                        <select v-model="status" class="text-sm border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 rounded-md shadow-sm">
+                            <option value="">All Statuses</option>
+                            <option value="pending">Pending</option>
+                            <option value="in_progress">In Progress</option>
+                            <option value="completed">Completed</option>
+                        </select>
+
+                        <select v-model="profession_id" class="text-sm border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 rounded-md shadow-sm">
+                            <option value="">All Professions</option>
+                            <option v-for="prof in availableProfessions" :key="prof.id" :value="prof.id">
+                                {{ prof.name }}
+                            </option>
+                        </select>
+
+                        <select v-model="sort" class="text-sm border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 rounded-md shadow-sm">
+                            <option value="latest">Latest</option>
+                            <option value="oldest">Oldest</option>
+                            <option value="due_date">Due Date</option>
+                        </select>
+
+                        <button @click="resetFilters" class="text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                            Reset
+                        </button>
                     </div>
-                    
-                    <select v-model="status" class="text-sm border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 rounded-md shadow-sm">
-                        <option value="">All Statuses</option>
-                        <option value="pending">Pending</option>
-                        <option value="in_progress">In Progress</option>
-                        <option value="completed">Completed</option>
-                    </select>
-
-                    <select v-model="area_id" class="text-sm border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 rounded-md shadow-sm">
-                        <option value="">All Areas</option>
-                        <option v-for="area in availableAreas" :key="area.id" :value="area.id">
-                            {{ area.name }}
-                        </option>
-                    </select>
-
-                    <select v-model="sort" class="text-sm border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 rounded-md shadow-sm">
-                        <option value="latest">Latest</option>
-                        <option value="oldest">Oldest</option>
-                        <option value="due_date">Due Date</option>
-                    </select>
-
-                    <button @click="resetFilters" class="text-xs text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
-                        Reset
-                    </button>
                 </div>
 
+                <!-- Table -->
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 text-gray-900 dark:text-gray-100">
                         <div v-if="tasks.data.length === 0" class="text-center py-8">
-                            <p class="text-gray-500 dark:text-gray-400">No tasks found.</p>
+                            <p class="text-gray-500 dark:text-gray-400">No tasks found matching your criteria.</p>
                         </div>
                         
                         <div v-else class="overflow-x-auto">
@@ -167,7 +160,7 @@ const getStatusClass = (status: string) => {
                                                 {{ task.service.title || task.title }}
                                             </div>
                                             <div class="flex items-center gap-2 mt-1">
-                                                <span v-if="task.area.name" class="text-[10px] bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-400 px-1.5 py-0.5 rounded border border-gray-200 dark:border-gray-700 font-bold uppercase">{{ task.area.name }}</span>
+                                                <span v-if="task.profession.name" class="text-[10px] bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-400 px-1.5 py-0.5 rounded border border-gray-200 dark:border-gray-700 font-bold uppercase">{{ task.profession.name }}</span>
                                             </div>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
@@ -237,6 +230,7 @@ const getStatusClass = (status: string) => {
                         </div>
                     </div>
                 </div>
+
             </div>
         </div>
     </AuthenticatedLayout>

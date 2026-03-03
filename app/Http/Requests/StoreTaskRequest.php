@@ -27,7 +27,7 @@ class StoreTaskRequest extends FormRequest
             'description' => ['nullable', 'string'],
             'status' => ['required', Rule::in(['pending', 'in_progress', 'completed'])],
             'due_date' => ['nullable', 'date', 'after_or_equal:today'],
-            'task_area_id' => ['required', 'exists:task_areas,id'],
+            'profession_id' => ['required', 'exists:professions,id'],
             'service_id' => ['required', 'exists:services,id'],
             'professional_id' => ['nullable', 'exists:users,id'],
         ];

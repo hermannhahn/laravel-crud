@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Service;
-use App\Models\TaskArea;
+use App\Models\Profession;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -19,7 +19,7 @@ class ServiceController extends Controller
         
         $targetCompanyId = $user->isAdmin() ? $request->company_id : $user->id;
 
-        $servicesQuery = Service::with(['area', 'company:id,name']);
+        $servicesQuery = Service::with(['profession', 'company:id,name']);
 
         if ($targetCompanyId) {
             $servicesQuery->where('company_id', $targetCompanyId);
@@ -29,7 +29,7 @@ class ServiceController extends Controller
             $servicesQuery->where(function($q) use ($request) {
                 $q->where('title', 'like', '%' . $request->search . '%')
                   ->orWhere('description', 'like', '%' . $request->search . '%')
-                  ->orWhereHas('area', function($sub) use ($request) {
+                  ->orWhereHas('profession', function($sub) use ($request) {
                       $sub->where('name', 'like', '%' . $request->search . '%');
                   });
             });
@@ -53,11 +53,11 @@ class ServiceController extends Controller
         $user = Auth::user();
         $targetCompanyId = $user->isAdmin() ? $request->company_id : $user->id;
 
-        $areas = [];
+        $professions = [];
         if ($targetCompanyId) {
-            $areas = TaskArea::where('company_id', $targetCompanyId)->get(['id', 'name']);
+            $professions = Profession::where('company_id', $targetCompanyId)->get(['id', 'name']);
         } elseif ($user->isAdmin()) {
-            $areas = TaskArea::all(['id', 'name']);
+            $professions = Profession::all(['id', 'name']);
         }
 
         $companies = $user->isAdmin()
@@ -65,7 +65,7 @@ class ServiceController extends Controller
             : [];
 
         return Inertia::render('Company/Services/Create', [
-            'areas' => $areas,
+            'professions' => $professions,
             'companies' => $companies,
             'selectedCompanyId' => $targetCompanyId,
         ]);
@@ -78,8 +78,8 @@ class ServiceController extends Controller
         $validated = $request->validate([
             'title' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
-            'price' => ['required', 'numeric', 'min:0'],
-            'task_area_id' => ['required', 'exists:task_areas,id'],
+            'payout' => ['required', 'numeric', 'min:0'],
+            'profession_id' => ['required', 'exists:professions,id'],
             'company_id' => [$user->isAdmin() ? 'required' : 'nullable', 'exists:users,id'],
         ]);
 
@@ -88,8 +88,8 @@ class ServiceController extends Controller
         Service::create([
             'title' => $validated['title'],
             'description' => $validated['description'],
-            'price' => $validated['price'],
-            'task_area_id' => $validated['task_area_id'],
+            'payout' => $validated['payout'],
+            'profession_id' => $validated['profession_id'],
             'company_id' => $companyId,
         ]);
 
@@ -103,11 +103,11 @@ class ServiceController extends Controller
             abort(403);
         }
 
-        $areas = TaskArea::where('company_id', $service->company_id)->get(['id', 'name']);
+        $professions = Profession::where('company_id', $service->company_id)->get(['id', 'name']);
         
         return Inertia::render('Company/Services/Edit', [
-            'service' => $service->load('area'),
-            'areas' => $areas,
+            'service' => $service->load('profession'),
+            'professions' => $professions,
         ]);
     }
 
@@ -121,8 +121,8 @@ class ServiceController extends Controller
         $validated = $request->validate([
             'title' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
-            'price' => ['required', 'numeric', 'min:0'],
-            'task_area_id' => ['required', 'exists:task_areas,id'],
+            'payout' => ['required', 'numeric', 'min:0'],
+            'profession_id' => ['required', 'exists:professions,id'],
         ]);
 
         $service->update($validated);
@@ -138,6 +138,6 @@ class ServiceController extends Controller
 
         $service->delete();
 
-        return redirect()->back()->with('message', 'Service deleted successfully.');
+        return redirect()->route('services.index')->with('message', 'Service deleted successfully.');
     }
 }

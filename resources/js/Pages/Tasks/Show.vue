@@ -12,10 +12,9 @@ const props = defineProps<{
         description: string;
         status: string;
         status_label: string;
-        due_date_formatted: string;
         company: { name: string };
-        area: { id: number | null, name: string | null };
-        service: { id: number | null, title: string | null, price: number | null };
+        profession: { id: number | null, name: string | null };
+        service: { id: number | null, title: string | null, payout: number | null };
         professional: { id: number | null, name: string | null };
         responses: Array<{
             id: number;
@@ -97,11 +96,11 @@ const getStatusClass = (status: string) => {
                                 <h3 class="text-2xl font-bold mb-2">{{ task.service.title || task.title }}</h3>
                                 
                                 <div class="flex flex-wrap items-center gap-3 mb-6">
-                                    <span v-if="task.area.name" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200 uppercase">
-                                        {{ task.area.name }}
+                                    <span v-if="task.profession.name" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200 uppercase">
+                                        {{ task.profession.name }}
                                     </span>
-                                    <span v-if="task.service.price" class="text-xl font-black text-indigo-600 dark:text-indigo-400">
-                                        Payout: ${{ Number(task.service.price).toLocaleString() }}
+                                    <span v-if="task.service.payout" class="text-xl font-black text-indigo-600 dark:text-indigo-400">
+                                        Payout: ${{ Number(task.service.payout).toLocaleString() }}
                                     </span>
                                 </div>
 

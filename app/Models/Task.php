@@ -17,7 +17,7 @@ class Task extends Model
         'user_id',
         'company_id',
         'professional_id',
-        'task_area_id',
+        'profession_id',
         'service_id',
         'title',
         'description',
@@ -42,9 +42,9 @@ class Task extends Model
         return $this->belongsTo(User::class, 'company_id');
     }
 
-    public function area(): BelongsTo
+    public function profession(): BelongsTo
     {
-        return $this->belongsTo(TaskArea::class, 'task_area_id');
+        return $this->belongsTo(Profession::class, 'profession_id');
     }
 
     public function service(): BelongsTo

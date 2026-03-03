@@ -12,10 +12,10 @@ class Service extends Model
 
     protected $fillable = [
         'company_id',
-        'task_area_id',
+        'profession_id',
         'title',
         'description',
-        'price',
+        'payout',
     ];
 
     public function company(): BelongsTo
@@ -23,8 +23,8 @@ class Service extends Model
         return $this->belongsTo(User::class, 'company_id');
     }
 
-    public function area(): BelongsTo
+    public function profession(): BelongsTo
     {
-        return $this->belongsTo(TaskArea::class, 'task_area_id');
+        return $this->belongsTo(Profession::class, 'profession_id');
     }
 }

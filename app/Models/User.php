@@ -6,6 +6,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class User extends Authenticatable
 {
@@ -22,9 +24,9 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'avatar_path',
         'is_active',
         'user_type',
-        'avatar_path',
     ];
 
     /**
@@ -51,57 +53,6 @@ class User extends Authenticatable
         ];
     }
 
-    // Tasks owned by this user (if company)
-    public function tasks(): \Illuminate\Database\Eloquent\Relations\HasMany
-    {
-        return $this->hasMany(Task::class, 'company_id');
-    }
-
-    // Tasks assigned to this user (if professional)
-    public function assignedTasks(): \Illuminate\Database\Eloquent\Relations\HasMany
-    {
-        return $this->hasMany(Task::class, 'professional_id');
-    }
-
-    // Areas defined by this company
-    public function taskAreas(): \Illuminate\Database\Eloquent\Relations\HasMany
-    {
-        return $this->hasMany(TaskArea::class, 'company_id');
-    }
-
-    public function services(): \Illuminate\Database\Eloquent\Relations\HasMany
-    {
-        return $this->hasMany(Service::class, 'company_id');
-    }
-
-    // Link between Companies and Professionals
-    public function professionals(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
-    {
-        return $this->belongsToMany(User::class, 'company_professional', 'company_id', 'professional_id')
-            ->withPivot(['can_view_tasks', 'can_respond_tasks', 'can_edit_tasks'])
-            ->withTimestamps();
-    }
-
-    public function companies(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
-    {
-        return $this->belongsToMany(User::class, 'company_professional', 'professional_id', 'company_id')
-            ->withPivot(['can_view_tasks', 'can_respond_tasks', 'can_edit_tasks'])
-            ->withTimestamps();
-    }
-
-    // New: Link to areas in the context of company-professional partnership
-    public function companyAreas(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
-    {
-        return $this->belongsToMany(TaskArea::class, 'company_professional_area', 'professional_id', 'task_area_id')
-            ->withPivot('company_id')
-            ->withTimestamps();
-    }
-
-    public function permissions(): \Illuminate\Database\Eloquent\Relations\HasMany
-    {
-        return $this->hasMany(Permission::class);
-    }
-
     public function isAdmin(): bool
     {
         return $this->role === 'admin';
@@ -117,34 +68,60 @@ class User extends Authenticatable
         return $this->user_type === 'professional';
     }
 
-    public function hasModulePermission(string $module, string $action): bool
+    public function permissions(): HasMany
     {
-        if ($this->isAdmin()) {
-            return true;
-        }
-
-        // Global admin-defined permissions
-        $permission = $this->permissions()->where('module', $module)->first();
-
-        if (!$permission) {
-            return false;
-        }
-
-        return (bool) $permission->{"can_{$action}"};
+        return $this->hasMany(Permission::class);
     }
 
-    public function getModuleMonthlyLimit(string $module): ?int
+    public function tasks(): HasMany
     {
-        $permission = $this->permissions()->where('module', $module)->first();
-        return $permission ? $permission->monthly_limit : null;
+        return $this->hasMany(Task::class, 'company_id');
     }
 
-    public function hasReachedMonthlyLimit(string $module): bool
+    public function assignedTasks(): HasMany
     {
-        $limit = $this->getModuleMonthlyLimit($module);
-        
-        if ($limit === null) {
-            return false;
+        return $this->hasMany(Task::class, 'professional_id');
+    }
+
+    public function professions(): HasMany
+    {
+        return $this->hasMany(Profession::class, 'company_id');
+    }
+
+    public function services(): HasMany
+    {
+        return $this->hasMany(Service::class, 'company_id');
+    }
+
+    public function professionals(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'company_professional', 'company_id', 'professional_id')
+            ->withPivot(['can_view_tasks', 'can_respond_tasks', 'can_edit_tasks'])
+            ->withTimestamps();
+    }
+
+    public function companies(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'company_professional', 'professional_id', 'company_id')
+            ->withPivot(['can_view_tasks', 'can_respond_tasks', 'can_edit_tasks'])
+            ->withTimestamps();
+    }
+
+    public function companyProfessions(): BelongsToMany
+    {
+        return $this->belongsToMany(Profession::class, 'company_professional_profession', 'professional_id', 'profession_id')
+            ->withPivot('company_id')
+            ->withTimestamps();
+    }
+
+    public function hasReachedLimit(string $module): bool
+    {
+        $permission = $this->permissions()->where('module', $module)->first();
+        if (!$permission) return false;
+
+        $limit = $permission->monthly_limit;
+        if (is_null($limit)) {
+          return false;
         }
 
         $count = match($module) {

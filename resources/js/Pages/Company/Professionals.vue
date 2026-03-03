@@ -13,7 +13,7 @@ const props = defineProps<{
         name: string;
         email: string;
         assigned_tasks_count: number;
-        company_areas: Array<{ id: number; name: string }>;
+        company_professions: Array<{ id: number; name: string }>;
         pivot: {
             company_id?: number;
             can_view_tasks: boolean;
@@ -21,7 +21,7 @@ const props = defineProps<{
             can_edit_tasks: boolean;
         };
     }>;
-    areas: Array<{
+    professions: Array<{
         id: number;
         name: string;
     }>;
@@ -33,14 +33,14 @@ const props = defineProps<{
 
 const addForm = useForm({
     professional_id: '',
-    task_area_ids: [] as number[],
+    profession_ids: [] as number[],
     company_id: '',
 });
 
 const onCompanyFilterChange = (compId: any) => {
     router.reload({
         data: { company_id: compId },
-        only: ['professionals', 'areas'],
+        only: ['professionals', 'professions'],
     });
 };
 
@@ -51,30 +51,27 @@ const addProfessional = () => {
 };
 
 const updatePermissions = (pro: any) => {
-    // Collect area IDs from the reactive object
-    const areaIds = pro.company_areas.map((a: any) => a.id);
-    
-    // For admins, we need to pass the company_id being managed
+    const professionIds = pro.company_professions.map((a: any) => a.id);
     const companyId = usePage().props.auth.user.role === 'admin' 
         ? (pro.pivot.company_id || addForm.company_id) 
         : null;
 
     router.patch(route('professionals.update-permissions', pro.id), {
         company_id: companyId,
-        task_area_ids: areaIds,
+        profession_ids: professionIds,
         can_view_tasks: pro.pivot.can_view_tasks,
         can_respond_tasks: pro.pivot.can_respond_tasks,
         can_edit_tasks: pro.pivot.can_edit_tasks,
     }, { preserveScroll: true });
 };
 
-const toggleArea = (pro: any, areaId: number) => {
-    const index = pro.company_areas.findIndex((a: any) => a.id === areaId);
+const toggleProfession = (pro: any, professionId: number) => {
+    const index = pro.company_professions.findIndex((a: any) => a.id === professionId);
     if (index > -1) {
-        pro.company_areas.splice(index, 1);
+        pro.company_professions.splice(index, 1);
     } else {
-        const area = props.areas.find(a => a.id === areaId);
-        if (area) pro.company_areas.push(area);
+        const prof = props.professions.find(a => a.id === professionId);
+        if (prof) pro.company_professions.push(prof);
     }
     updatePermissions(pro);
 };
@@ -103,7 +100,7 @@ const removeProfessional = (pro: any) => {
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
                 
-                <!-- Admin only: Select Company to Manage -->
+                <!-- Admin only -->
                 <div v-if="$page.props.auth.user.role === 'admin'" class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg border-2 border-indigo-500">
                     <div class="max-w-xl">
                         <InputLabel for="filter_company_id" value="Select Company to Manage" />
@@ -118,7 +115,6 @@ const removeProfessional = (pro: any) => {
                                 {{ company.name }}
                             </option>
                         </select>
-                        <p class="mt-2 text-xs text-gray-500">Select a company first to see its authorized professionals and available areas.</p>
                     </div>
                 </div>
 
@@ -127,7 +123,7 @@ const removeProfessional = (pro: any) => {
                     <section>
                         <header>
                             <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">Authorize New Professional</h2>
-                            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">Add a professional by ID and select their authorized areas.</p>
+                            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">Add a professional by ID and select their authorized professions.</p>
                         </header>
 
                         <form @submit.prevent="addProfessional" class="mt-6 space-y-6">
@@ -139,25 +135,24 @@ const removeProfessional = (pro: any) => {
                                     class="mt-1 block w-full"
                                     v-model="addForm.professional_id"
                                     required
-                                    placeholder="Enter professional's ID..."
                                 />
                                 <InputError :message="addForm.errors.professional_id" class="mt-2" />
                             </div>
 
                             <div>
-                                <InputLabel value="Authorized Areas" />
+                                <InputLabel value="Authorized Professions" />
                                 <div class="mt-2 grid grid-cols-2 md:grid-cols-4 gap-4">
-                                    <label v-for="area in areas" :key="area.id" class="flex items-center">
+                                    <label v-for="prof in professions" :key="prof.id" class="flex items-center">
                                         <input 
                                             type="checkbox" 
-                                            :value="area.id" 
-                                            v-model="addForm.task_area_ids"
+                                            :value="prof.id" 
+                                            v-model="addForm.profession_ids"
                                             class="rounded dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-indigo-600 shadow-sm focus:ring-indigo-500 dark:focus:ring-indigo-600 dark:focus:ring-offset-gray-800"
                                         />
-                                        <span class="ml-2 text-sm text-gray-600 dark:text-gray-400">{{ area.name }}</span>
+                                        <span class="ml-2 text-sm text-gray-600 dark:text-gray-400">{{ prof.name }}</span>
                                     </label>
                                 </div>
-                                <InputError :message="addForm.errors.task_area_ids" class="mt-2" />
+                                <InputError :message="addForm.errors.profession_ids" class="mt-2" />
                             </div>
 
                             <PrimaryButton :disabled="addForm.processing">Authorize</PrimaryButton>
@@ -165,7 +160,7 @@ const removeProfessional = (pro: any) => {
                     </section>
                 </div>
 
-                <!-- Professionals List -->
+                <!-- List -->
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 text-gray-900 dark:text-gray-100">
                         <h3 class="text-lg font-medium mb-4">Authorized Professionals</h3>
@@ -175,7 +170,7 @@ const removeProfessional = (pro: any) => {
                                 <thead>
                                     <tr class="text-left text-xs font-medium text-gray-500 uppercase">
                                         <th class="px-4 py-3">Professional</th>
-                                        <th class="px-4 py-3">Authorized Areas</th>
+                                        <th class="px-4 py-3">Authorized Professions</th>
                                         <th class="px-4 py-3 text-center">Open Tasks</th>
                                         <th class="px-4 py-3 text-center">View</th>
                                         <th class="px-4 py-3 text-center">Respond</th>
@@ -192,17 +187,17 @@ const removeProfessional = (pro: any) => {
                                         <td class="px-4 py-4">
                                             <div class="flex flex-wrap gap-2">
                                                 <button 
-                                                    v-for="area in areas" 
-                                                    :key="area.id"
-                                                    @click="toggleArea(pro, area.id)"
+                                                    v-for="prof in professions" 
+                                                    :key="prof.id"
+                                                    @click="toggleProfession(pro, prof.id)"
                                                     :class="[
                                                         'px-2 py-0.5 rounded text-[10px] font-bold uppercase transition',
-                                                        pro.company_areas.some(a => a.id === area.id)
+                                                        pro.company_professions.some(a => a.id === prof.id)
                                                             ? 'bg-indigo-100 text-indigo-700 border border-indigo-200 dark:bg-indigo-900 dark:text-indigo-300'
                                                             : 'bg-gray-100 text-gray-400 border border-gray-200 dark:bg-gray-900 dark:text-gray-600 opacity-50'
                                                     ]"
                                                 >
-                                                    {{ area.name }}
+                                                    {{ prof.name }}
                                                 </button>
                                             </div>
                                         </td>
@@ -219,7 +214,7 @@ const removeProfessional = (pro: any) => {
                                         <td class="px-4 py-4 text-right">
                                             <button 
                                                 @click.stop="removeProfessional(pro)" 
-                                                class="p-1.5 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-full transition-colors"
+                                                class="inline-flex items-center justify-center p-1.5 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-full transition-colors"
                                                 title="Deauthorize Professional"
                                             >
                                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7a4 4 0 11-8 0 4 4 0 018 0zM9 14a6 6 0 00-6 6v1h12v-1a6 6 0 00-6-6zM21 12H15"></path></svg>

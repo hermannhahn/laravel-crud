@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Profession;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -15,7 +16,7 @@ class CompanyProfessionalController extends Controller
     {
         $user = Auth::user();
         $professionals = [];
-        $areas = [];
+        $professions = [];
         
         $targetCompanyId = $user->isAdmin() ? $request->company_id : $user->id;
 
@@ -23,15 +24,15 @@ class CompanyProfessionalController extends Controller
             $company = User::find($targetCompanyId);
             if ($company && ($user->isAdmin() || $company->id === $user->id)) {
                 $professionals = $company->professionals()
-                    ->with(['companyAreas' => function($query) use ($company) {
-                        $query->where('company_professional_area.company_id', $company->id);
+                    ->with(['companyProfessions' => function($query) use ($company) {
+                        $query->where('company_professional_profession.company_id', $company->id);
                     }])
                     ->withCount(['assignedTasks' => function($query) use ($company) {
                         $query->where('company_id', $company->id);
                     }])
                     ->get();
                 
-                $areas = $company->taskAreas()->get(['id', 'name']);
+                $professions = $company->professions()->get(['id', 'name']);
             }
         }
 
@@ -41,7 +42,7 @@ class CompanyProfessionalController extends Controller
 
         return Inertia::render('Company/Professionals', [
             'professionals' => $professionals,
-            'areas' => $areas,
+            'professions' => $professions,
             'companies' => $companies,
         ]);
     }
@@ -51,8 +52,8 @@ class CompanyProfessionalController extends Controller
         $user = Auth::user();
         $request->validate([
             'professional_id' => ['required', 'numeric', 'exists:users,id'],
-            'task_area_ids' => ['required', 'array'],
-            'task_area_ids.*' => ['exists:task_areas,id'],
+            'profession_ids' => ['required', 'array'],
+            'profession_ids.*' => ['exists:professions,id'],
             'company_id' => [$user->isAdmin() ? 'required' : 'nullable', 'exists:users,id'],
         ]);
 
@@ -66,12 +67,12 @@ class CompanyProfessionalController extends Controller
 
         $company->professionals()->syncWithoutDetaching([$professional->id]);
         
-        // Link to multiple areas
-        $areaData = [];
-        foreach ($request->task_area_ids as $areaId) {
-            $areaData[$areaId] = ['company_id' => $company->id];
+        // Link to multiple professions
+        $professionData = [];
+        foreach ($request->profession_ids as $professionId) {
+            $professionData[$professionId] = ['company_id' => $company->id];
         }
-        $professional->companyAreas()->wherePivot('company_id', $company->id)->sync($areaData);
+        $professional->companyProfessions()->wherePivot('company_id', $company->id)->sync($professionData);
 
         return redirect()->back()->with('message', 'Professional authorized successfully.');
     }
@@ -86,8 +87,8 @@ class CompanyProfessionalController extends Controller
         $company = User::findOrFail($companyId);
         $company->professionals()->detach($user->id);
         
-        // Cleanup areas
-        $user->companyAreas()->wherePivot('company_id', $company->id)->detach();
+        // Cleanup professions
+        $user->companyProfessions()->wherePivot('company_id', $company->id)->detach();
 
         return redirect()->back()->with('message', 'Professional deauthorized.');
     }
@@ -96,8 +97,8 @@ class CompanyProfessionalController extends Controller
     {
         $authUser = Auth::user();
         $validated = $request->validate([
-            'task_area_ids' => ['required', 'array'],
-            'task_area_ids.*' => ['exists:task_areas,id'],
+            'profession_ids' => ['required', 'array'],
+            'profession_ids.*' => ['exists:professions,id'],
             'can_view_tasks' => ['required', 'boolean'],
             'can_respond_tasks' => ['required', 'boolean'],
             'can_edit_tasks' => ['required', 'boolean'],
@@ -114,12 +115,12 @@ class CompanyProfessionalController extends Controller
             'can_edit_tasks' => $validated['can_edit_tasks'],
         ]);
 
-        // Sync areas
-        $areaData = [];
-        foreach ($validated['task_area_ids'] as $areaId) {
-            $areaData[$areaId] = ['company_id' => $company->id];
+        // Sync professions
+        $professionData = [];
+        foreach ($validated['profession_ids'] as $professionId) {
+            $professionData[$professionId] = ['company_id' => $company->id];
         }
-        $user->companyAreas()->wherePivot('company_id', $company->id)->sync($areaData);
+        $user->companyProfessions()->wherePivot('company_id', $company->id)->sync($professionData);
 
         return redirect()->back()->with('message', 'Professional updated successfully.');
     }

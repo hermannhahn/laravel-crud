@@ -11,17 +11,17 @@ const props = defineProps<{
         id: number;
         title: string;
         description: string;
-        price: number;
-        task_area_id: number;
+        payout: number;
+        profession_id: number;
     };
-    areas: Array<{ id: number; name: string }>;
+    professions: Array<{ id: number; name: string }>;
 }>();
 
 const form = useForm({
     title: props.service.title,
     description: props.service.description,
-    price: String(props.service.price),
-    task_area_id: props.service.task_area_id,
+    payout: String(props.service.payout),
+    profession_id: props.service.profession_id,
 });
 
 const submit = () => {
@@ -43,20 +43,20 @@ const submit = () => {
                     <div class="p-6 text-gray-900 dark:text-gray-100 max-w-2xl">
                         <form @submit.prevent="submit" class="space-y-6">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <!-- Area Selection -->
+                                <!-- Profession Selection -->
                                 <div>
-                                    <InputLabel for="task_area_id" value="Area" />
+                                    <InputLabel for="profession_id" value="Profession" />
                                     <select
-                                        id="task_area_id"
-                                        v-model="form.task_area_id"
+                                        id="profession_id"
+                                        v-model="form.profession_id"
                                         class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm"
                                         required
                                     >
-                                        <option v-for="area in areas" :key="area.id" :value="area.id">
-                                            {{ area.name }}
+                                        <option v-for="prof in professions" :key="prof.id" :value="prof.id">
+                                            {{ prof.name }}
                                         </option>
                                     </select>
-                                    <InputError :message="form.errors.task_area_id" class="mt-2" />
+                                    <InputError :message="form.errors.profession_id" class="mt-2" />
                                 </div>
 
                                 <!-- Title -->
@@ -86,16 +86,16 @@ const submit = () => {
 
                                 <!-- Payout -->
                                 <div>
-                                    <InputLabel for="price" value="Professional Payout (USD)" />
+                                    <InputLabel for="payout" value="Professional Payout (USD)" />
                                     <TextInput
-                                        id="price"
+                                        id="payout"
                                         type="number"
                                         step="0.01"
                                         class="mt-1 block w-full"
-                                        v-model="form.price"
+                                        v-model="form.payout"
                                         required
                                     />
-                                    <InputError :message="form.errors.price" class="mt-2" />
+                                    <InputError :message="form.errors.payout" class="mt-2" />
                                 </div>
                             </div>
 

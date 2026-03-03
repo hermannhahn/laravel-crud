@@ -21,24 +21,19 @@ class TaskResource extends JsonResource
             'title' => $this->title,
             'description' => $this->description,
             'status' => $this->status,
-            'status_label' => match($this->status) {
-                'pending' => 'Pending',
-                'in_progress' => 'In Progress',
-                'completed' => 'Completed',
-                default => 'Unknown',
-            },
+            'status_label' => ucfirst(str_replace('_', ' ', $this->status)),
             'company' => [
                 'id' => $this->company_id,
                 'name' => $this->company?->name,
             ],
-            'area' => [
-                'id' => $this->task_area_id,
-                'name' => $this->area?->name,
+            'profession' => [
+                'id' => $this->profession_id,
+                'name' => $this->profession?->name,
             ],
             'service' => [
                 'id' => $this->service_id,
                 'title' => $this->service?->title,
-                'price' => $this->service?->price,
+                'payout' => $this->service?->payout,
             ],
             'professional' => [
                 'id' => $this->professional_id,
@@ -46,8 +41,7 @@ class TaskResource extends JsonResource
             ],
             'due_date' => $this->due_date?->format('Y-m-d'),
             'due_date_formatted' => $this->due_date?->format('M d, Y'),
-            'created_at' => $this->created_at->format('Y-m-d H:i:s'),
-            'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
+            'completed_at' => $this->completed_at?->format('Y-m-d H:i:s'),
             'can' => [
                 'update' => $user?->isAdmin() || ($user && $user->id === $this->company_id),
                 'respond' => $user?->isAdmin() || ($user && $user->id === $this->professional_id),

@@ -10,7 +10,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserPermissionController;
 use App\Http\Controllers\UserProfileController;
 use App\Http\Controllers\CompanyProfessionalController;
-use App\Http\Controllers\TaskAreaController;
+use App\Http\Controllers\ProfessionController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\DashboardController;
 
@@ -45,10 +45,13 @@ Route::middleware('auth')->group(function () {
     Route::delete('/professionals/{user}', [CompanyProfessionalController::class, 'removeProfessional'])->name('professionals.remove');
     Route::patch('/professionals/{user}/permissions', [CompanyProfessionalController::class, 'updatePermissions'])->name('professionals.update-permissions');
 
-    // Areas
-    Route::get('/areas', [TaskAreaController::class, 'index'])->name('areas.index');
-    Route::post('/areas', [TaskAreaController::class, 'store'])->name('areas.store');
-    Route::delete('/areas/{area}', [TaskAreaController::class, 'destroy'])->name('areas.destroy');
+    // Professions
+    Route::get('/professions', [ProfessionController::class, 'index'])->name('professions.index');
+    Route::get('/professions/create', [ProfessionController::class, 'create'])->name('professions.create');
+    Route::post('/professions', [ProfessionController::class, 'store'])->name('professions.store');
+    Route::get('/professions/{profession}/edit', [ProfessionController::class, 'edit'])->name('professions.edit');
+    Route::put('/professions/{profession}', [ProfessionController::class, 'update'])->name('professions.update');
+    Route::delete('/professions/{profession}', [ProfessionController::class, 'destroy'])->name('professions.destroy');
 
     // Services
     Route::get('/services', [ServiceController::class, 'index'])->name('services.index');
