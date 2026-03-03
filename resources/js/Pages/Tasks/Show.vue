@@ -14,6 +14,8 @@ const props = defineProps<{
         status_label: string;
         due_date_formatted: string;
         company: { name: string };
+        area: { id: number | null, name: string | null };
+        service: { id: number | null, title: string | null, price: number | null };
         professional: { id: number | null, name: string | null };
         responses: Array<{
             id: number;
@@ -45,7 +47,7 @@ const getStatusClass = (status: string) => {
 </script>
 
 <template>
-    <Head :title="'Task: ' + task.title" />
+    <Head :title="'Task: ' + (task.service.title || task.title)" />
 
     <AuthenticatedLayout>
         <template #header>
@@ -92,9 +94,20 @@ const getStatusClass = (status: string) => {
                     <div class="p-6 text-gray-900 dark:text-gray-100">
                         <div class="flex flex-wrap justify-between items-start gap-4 mb-6">
                             <div class="flex-1 min-w-[300px]">
-                                <h3 class="text-2xl font-bold mb-2">{{ task.title }}</h3>
+                                <h3 class="text-2xl font-bold mb-2">{{ task.service.title || task.title }}</h3>
+                                
+                                <div class="flex flex-wrap items-center gap-3 mb-6">
+                                    <span v-if="task.area.name" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200 uppercase">
+                                        {{ task.area.name }}
+                                    </span>
+                                    <span v-if="task.service.price" class="text-xl font-black text-indigo-600 dark:text-indigo-400">
+                                        Payout: ${{ Number(task.service.price).toLocaleString() }}
+                                    </span>
+                                </div>
+
                                 <p class="text-gray-600 dark:text-gray-400 whitespace-pre-wrap">{{ task.description }}</p>
                             </div>
+                            
                             <div class="w-full md:w-64 space-y-4">
                                 <div class="p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
                                     <span class="block text-xs font-semibold text-gray-500 uppercase mb-1">Status</span>
@@ -102,17 +115,16 @@ const getStatusClass = (status: string) => {
                                         {{ task.status_label }}
                                     </span>
                                 </div>
-                                <div class="p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
-                                    <span class="block text-xs font-semibold text-gray-500 uppercase mb-1">Deadline</span>
-                                    <span class="text-sm">{{ task.due_date_formatted || 'No deadline' }}</span>
-                                </div>
+                                
                                 <div class="p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
                                     <span class="block text-xs font-semibold text-gray-500 uppercase mb-1">Involved</span>
                                     <div class="text-sm mb-2">
-                                        <span class="text-gray-400">Company:</span> {{ task.company.name }}
+                                        <span class="text-gray-400 font-bold uppercase text-[10px]">Company:</span>
+                                        <div class="font-medium">{{ task.company.name }}</div>
                                     </div>
                                     <div class="text-sm">
-                                        <span class="text-gray-400">Pro:</span> {{ task.professional.name || 'Unassigned' }}
+                                        <span class="text-gray-400 font-bold uppercase text-[10px]">Professional:</span>
+                                        <div class="font-medium">{{ task.professional.name || 'Unassigned' }}</div>
                                     </div>
                                 </div>
                             </div>
