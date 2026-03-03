@@ -14,9 +14,11 @@ class Task extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'user_id', // Legacy ownership, might keep for compatibility or migration
+        'user_id',
         'company_id',
         'professional_id',
+        'task_area_id',
+        'service_id',
         'title',
         'description',
         'status',
@@ -43,6 +45,11 @@ class Task extends Model
     public function area(): BelongsTo
     {
         return $this->belongsTo(TaskArea::class, 'task_area_id');
+    }
+
+    public function service(): BelongsTo
+    {
+        return $this->belongsTo(Service::class);
     }
 
     public function professional(): BelongsTo

@@ -141,9 +141,15 @@ class TaskController extends Controller
             ? User::where('user_type', 'company')->get(['id', 'name'])
             : [];
 
+        $services = [];
+        if ($targetCompanyId) {
+            $services = Service::where('company_id', $targetCompanyId)->get(['id', 'title', 'task_area_id', 'price']);
+        }
+
         return Inertia::render('Tasks/Create', [
             'professionals' => $professionals,
             'areas' => $areas,
+            'services' => $services,
             'companies' => $companies,
         ]);
     }
@@ -230,10 +236,16 @@ class TaskController extends Controller
             ? User::where('user_type', 'company')->get(['id', 'name'])
             : [];
 
+        $services = [];
+        if ($targetCompanyId) {
+            $services = Service::where('company_id', $targetCompanyId)->get(['id', 'title', 'task_area_id', 'price']);
+        }
+
         return Inertia::render('Tasks/Edit', [
             'task' => new TaskResource($task),
             'professionals' => $professionals,
             'areas' => $areas,
+            'services' => $services,
             'companies' => $companies,
         ]);
     }

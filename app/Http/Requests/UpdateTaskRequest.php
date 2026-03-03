@@ -28,6 +28,7 @@ class UpdateTaskRequest extends FormRequest
             'status' => ['sometimes', 'required', Rule::in(['pending', 'in_progress', 'completed'])],
             'due_date' => ['nullable', 'date'],
             'task_area_id' => ['nullable', 'exists:task_areas,id'],
+            'service_id' => ['nullable', 'exists:services,id'],
             'professional_id' => ['nullable', 'exists:users,id'],
         ];
     }

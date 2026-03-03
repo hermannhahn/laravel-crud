@@ -35,6 +35,11 @@ class TaskResource extends JsonResource
                 'id' => $this->task_area_id,
                 'name' => $this->area?->name,
             ],
+            'service' => [
+                'id' => $this->service_id,
+                'title' => $this->service?->title,
+                'price' => $this->service?->price,
+            ],
             'professional' => [
                 'id' => $this->professional_id,
                 'name' => $this->professional?->name,
