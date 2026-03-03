@@ -20,5 +20,7 @@ export type PageProps<
         message: string | null;
         error: string | null;
     };
+    appName: string;
+    appLogo: string | null;
     ziggy: Config & { location: string };
 };

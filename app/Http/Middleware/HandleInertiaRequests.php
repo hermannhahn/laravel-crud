@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 use Tighten\Ziggy\Ziggy;
+use App\Models\Setting;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -46,6 +47,8 @@ class HandleInertiaRequests extends Middleware
                 'message' => $request->session()->get('message'),
                 'error' => $request->session()->get('error'),
             ],
+            'appName' => Setting::get('app_name', config('app.name')),
+            'appLogo' => Setting::get('app_logo'),
             'ziggy' => fn () => [
                 ...(new Ziggy)->toArray(),
                 'location' => $request->url(),

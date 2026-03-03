@@ -3,7 +3,7 @@
     "private": true,
     "type": "module",
     "scripts": {
-        "setup": "cp .env.example .env && docker run --rm -v $(pwd):/var/www/html -w /var/www/html laravelsail/php84-composer:latest composer install --ignore-platform-reqs && npm install && docker compose up -d && sleep 10 && docker compose exec laravel.test php artisan key:generate && docker compose exec laravel.test php artisan migrate && npm run build",
+        "setup": "cp .env.example .env && docker run --rm -v $(pwd):/var/www/html -w /var/www/html laravelsail/php84-composer:latest composer install --ignore-platform-reqs && npm install && docker compose up -d && sleep 10 && docker compose exec laravel.test php artisan key:generate && docker compose exec laravel.test php artisan migrate && docker compose exec laravel.test php artisan storage:link && npm run build",
         "start": "docker compose up -d",
         "stop": "docker compose stop",
         "build": "vue-tsc && vite build && vite build --ssr",

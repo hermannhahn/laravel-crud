@@ -22,10 +22,15 @@ const showingNavigationDropdown = ref(false);
                         <div class="flex">
                             <!-- Logo -->
                             <div class="shrink-0 flex items-center">
-                                <Link :href="route('dashboard')">
+                                <Link :href="route('dashboard')" class="flex items-center">
+                                    <template v-if="$page.props.appLogo">
+                                        <img :src="$page.props.appLogo" class="block h-9 w-auto" alt="Logo" />
+                                    </template>
                                     <ApplicationLogo
+                                        v-else
                                         class="block h-9 w-auto fill-current text-gray-800 dark:text-gray-200"
                                     />
+                                    <span class="ml-3 text-lg font-bold text-gray-800 dark:text-gray-200 uppercase">{{ $page.props.appName }}</span>
                                 </Link>
                             </div>
 
@@ -51,6 +56,12 @@ const showingNavigationDropdown = ref(false);
                                 </NavLink>
                                 <NavLink :href="route('finance.index')" :active="route().current('finance.*')">
                                     Finance
+                                </NavLink>
+                                <NavLink v-if="$page.props.auth.user.role === 'admin'" :href="route('settings.index')" :active="route().current('settings.*')">
+                                    Settings
+                                </NavLink>
+                                <NavLink :href="route('help')" :active="route().current('help')">
+                                    Help
                                 </NavLink>
                             </div>
                         </div>
@@ -150,10 +161,16 @@ const showingNavigationDropdown = ref(false);
                         <ResponsiveNavLink v-if="$page.props.auth.user.role === 'admin'" :href="route('users.index')" :active="route().current('users.*')">
                             Users
                         </ResponsiveNavLink>
-                        <ResponsiveNavLink :href="route('finance.index')" :active="route().current('finance.*')">
+                        <NavLink :href="route('finance.index')" :active="route().current('finance.*')">
                             Finance
+                        </NavLink>
+                        <ResponsiveNavLink v-if="$page.props.auth.user.role === 'admin'" :href="route('settings.index')" :active="route().current('settings.*')">
+                            Settings
                         </ResponsiveNavLink>
-                    </div>
+                        <ResponsiveNavLink :href="route('help')" :active="route().current('help')">
+                            Help
+                        </ResponsiveNavLink>
+                        </div>
 
                     <!-- Responsive Settings Options -->
                     <div class="pt-4 pb-1 border-t border-gray-200 dark:border-gray-600">

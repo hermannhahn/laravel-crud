@@ -14,6 +14,7 @@ use App\Http\Controllers\ProfessionController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FinanceController;
+use App\Http\Controllers\SettingController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -63,6 +64,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/services/{service}', [ServiceController::class, 'destroy'])->name('services.destroy');
 
     Route::get('/finance', [FinanceController::class, 'index'])->name('finance.index');
+    Route::get('/help', [SettingController::class, 'help'])->name('help');
 });
 
 Route::middleware('admin')->group(function () {
@@ -71,6 +73,9 @@ Route::middleware('admin')->group(function () {
     Route::patch('/users/{user}/role', [UserController::class, 'updateRole'])->name('users.update-role');
     Route::patch('/users/{user}/toggle-status', [UserController::class, 'toggleStatus'])->name('users.toggle-status');
     Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+
+    Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
+    Route::post('/settings', [SettingController::class, 'update'])->name('settings.update');
 });
 
 require __DIR__.'/auth.php';
