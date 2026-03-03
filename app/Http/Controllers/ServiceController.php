@@ -17,7 +17,6 @@ class ServiceController extends Controller
     {
         $user = Auth::user();
         
-        // If admin, they might want to filter by company
         $targetCompanyId = $user->isAdmin() ? $request->company_id : $user->id;
 
         $servicesQuery = Service::with(['area', 'company:id,name']);
@@ -26,9 +25,34 @@ class ServiceController extends Controller
             $servicesQuery->where('company_id', $targetCompanyId);
         }
 
-        $services = $servicesQuery->latest()->get();
+        if ($request->filled('search')) {
+            $servicesQuery->where(function($q) use ($request) {
+                $q->where('title', 'like', '%' . $request->search . '%')
+                  ->orWhere('description', 'like', '%' . $request->search . '%')
+                  ->orWhereHas('area', function($sub) use ($request) {
+                      $sub->where('name', 'like', '%' . $request->search . '%');
+                  });
+            });
+        }
 
-        // Areas for the creation form
+        $services = $servicesQuery->latest()->paginate(15)->withQueryString();
+
+        $companies = $user->isAdmin()
+            ? User::where('user_type', 'company')->get(['id', 'name'])
+            : [];
+
+        return Inertia::render('Company/Services/Index', [
+            'services' => $services,
+            'companies' => $companies,
+            'filters' => $request->only(['company_id', 'search']),
+        ]);
+    }
+
+    public function create(Request $request): Response
+    {
+        $user = Auth::user();
+        $targetCompanyId = $user->isAdmin() ? $request->company_id : $user->id;
+
         $areas = [];
         if ($targetCompanyId) {
             $areas = TaskArea::where('company_id', $targetCompanyId)->get(['id', 'name']);
@@ -40,11 +64,10 @@ class ServiceController extends Controller
             ? User::where('user_type', 'company')->get(['id', 'name'])
             : [];
 
-        return Inertia::render('Company/Services', [
-            'services' => $services,
+        return Inertia::render('Company/Services/Create', [
             'areas' => $areas,
             'companies' => $companies,
-            'filters' => $request->only(['company_id']),
+            'selectedCompanyId' => $targetCompanyId,
         ]);
     }
 
@@ -70,7 +93,41 @@ class ServiceController extends Controller
             'company_id' => $companyId,
         ]);
 
-        return redirect()->back()->with('message', 'Service created successfully.');
+        return redirect()->route('services.index')->with('message', 'Service created successfully.');
+    }
+
+    public function edit(Service $service): Response
+    {
+        $user = Auth::user();
+        if (!$user->isAdmin() && $service->company_id !== $user->id) {
+            abort(403);
+        }
+
+        $areas = TaskArea::where('company_id', $service->company_id)->get(['id', 'name']);
+        
+        return Inertia::render('Company/Services/Edit', [
+            'service' => $service->load('area'),
+            'areas' => $areas,
+        ]);
+    }
+
+    public function update(Request $request, Service $service): RedirectResponse
+    {
+        $user = Auth::user();
+        if (!$user->isAdmin() && $service->company_id !== $user->id) {
+            abort(403);
+        }
+
+        $validated = $request->validate([
+            'title' => ['required', 'string', 'max:255'],
+            'description' => ['nullable', 'string'],
+            'price' => ['required', 'numeric', 'min:0'],
+            'task_area_id' => ['required', 'exists:task_areas,id'],
+        ]);
+
+        $service->update($validated);
+
+        return redirect()->route('services.index')->with('message', 'Service updated successfully.');
     }
 
     public function destroy(Service $service): RedirectResponse
