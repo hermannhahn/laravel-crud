@@ -7,9 +7,11 @@ const props = defineProps<{
     content: string;
 }>();
 
+// Ensure literal \n strings are converted to actual newlines
+const sanitizedContent = props.content.replace(/\\n/g, '\n');
+
 // Helper to format the content: split by double newlines for paragraphs
-// and handle single newlines as line breaks.
-const formattedParagraphs = props.content.split(/\n\n+/);
+const formattedParagraphs = sanitizedContent.split(/\n\n+/);
 </script>
 
 <template>
