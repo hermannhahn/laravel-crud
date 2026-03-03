@@ -209,6 +209,8 @@ class TaskController extends Controller
             abort(403);
         }
 
+        $task->load(['company', 'professional', 'area', 'service']);
+
         return Inertia::render('Tasks/Show', [
             'task' => array_merge((new TaskResource($task))->resolve(), [
                 'responses' => $task->responses()->with('user:id,name,avatar_path')->latest()->get(),
