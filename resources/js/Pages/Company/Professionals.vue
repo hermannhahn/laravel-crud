@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, useForm, router } from '@inertiajs/vue3';
+import { Head, useForm, router, usePage } from '@inertiajs/vue3';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import Checkbox from '@/Components/Checkbox.vue';
@@ -15,6 +15,7 @@ const props = defineProps<{
         assigned_tasks_count: number;
         company_areas: Array<{ id: number; name: string }>;
         pivot: {
+            company_id?: number;
             can_view_tasks: boolean;
             can_respond_tasks: boolean;
             can_edit_tasks: boolean;
@@ -24,16 +25,28 @@ const props = defineProps<{
         id: number;
         name: string;
     }>;
+    companies: Array<{
+        id: number;
+        name: string;
+    }>;
 }>();
 
 const addForm = useForm({
     professional_id: '',
     task_area_ids: [] as number[],
+    company_id: '',
 });
+
+const onCompanyFilterChange = (compId: any) => {
+    router.reload({
+        data: { company_id: compId },
+        only: ['professionals', 'areas'],
+    });
+};
 
 const addProfessional = () => {
     addForm.post(route('professionals.add'), {
-        onSuccess: () => addForm.reset(),
+        onSuccess: () => addForm.reset('professional_id'),
     });
 };
 
@@ -41,7 +54,13 @@ const updatePermissions = (pro: any) => {
     // Collect area IDs from the reactive object
     const areaIds = pro.company_areas.map((a: any) => a.id);
     
+    // For admins, we need to pass the company_id being managed
+    const companyId = usePage().props.auth.user.role === 'admin' 
+        ? (pro.pivot.company_id || addForm.company_id) 
+        : null;
+
     router.patch(route('professionals.update-permissions', pro.id), {
+        company_id: companyId,
         task_area_ids: areaIds,
         can_view_tasks: pro.pivot.can_view_tasks,
         can_respond_tasks: pro.pivot.can_respond_tasks,
@@ -60,9 +79,15 @@ const toggleArea = (pro: any, areaId: number) => {
     updatePermissions(pro);
 };
 
-const removeProfessional = (id: number) => {
+const removeProfessional = (pro: any) => {
     if (confirm('Deauthorize this professional?')) {
-        router.delete(route('professionals.remove', id));
+        const companyId = usePage().props.auth.user.role === 'admin' 
+            ? (pro.pivot.company_id || addForm.company_id) 
+            : null;
+
+        router.delete(route('professionals.remove', pro.id), {
+            data: { company_id: companyId }
+        });
     }
 };
 </script>
@@ -77,8 +102,28 @@ const removeProfessional = (id: number) => {
 
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+                
+                <!-- Admin only: Select Company to Manage -->
+                <div v-if="$page.props.auth.user.role === 'admin'" class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg border-2 border-indigo-500">
+                    <div class="max-w-xl">
+                        <InputLabel for="filter_company_id" value="Select Company to Manage" />
+                        <select
+                            id="filter_company_id"
+                            v-model="addForm.company_id"
+                            @change="onCompanyFilterChange(addForm.company_id)"
+                            class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm"
+                        >
+                            <option value="" disabled>Choose a company...</option>
+                            <option v-for="company in companies" :key="company.id" :value="company.id">
+                                {{ company.name }}
+                            </option>
+                        </select>
+                        <p class="mt-2 text-xs text-gray-500">Select a company first to see its authorized professionals and available areas.</p>
+                    </div>
+                </div>
+
                 <!-- Add Professional -->
-                <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
+                <div v-if="$page.props.auth.user.user_type === 'company' || addForm.company_id" class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
                     <section>
                         <header>
                             <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">Authorize New Professional</h2>
@@ -172,7 +217,7 @@ const removeProfessional = (id: number) => {
                                             <Checkbox v-model:checked="pro.pivot.can_edit_tasks" @change="updatePermissions(pro)" />
                                         </td>
                                         <td class="px-4 py-4 text-right">
-                                            <button @click="removeProfessional(pro.id)" class="text-red-600 hover:text-red-900 text-sm">Deauthorize</button>
+                                            <button @click="removeProfessional(pro)" class="text-red-600 hover:text-red-900 text-sm">Deauthorize</button>
                                         </td>
                                     </tr>
                                 </tbody>

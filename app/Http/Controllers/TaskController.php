@@ -248,6 +248,14 @@ class TaskController extends Controller
             $validated['company_id'] = $request->company_id;
         }
 
+        if (isset($validated['status'])) {
+            if ($validated['status'] === 'completed' && $task->status !== 'completed') {
+                $validated['completed_at'] = now();
+            } elseif ($validated['status'] !== 'completed') {
+                $validated['completed_at'] = null;
+            }
+        }
+
         $task->update($validated);
 
         return redirect()->route('tasks.index')

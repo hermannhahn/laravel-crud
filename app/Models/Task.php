@@ -21,10 +21,12 @@ class Task extends Model
         'description',
         'status',
         'due_date',
+        'completed_at',
     ];
 
     protected $casts = [
         'due_date' => 'date',
+        'completed_at' => 'datetime',
         'status' => 'string',
     ];
 

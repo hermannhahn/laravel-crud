@@ -11,36 +11,53 @@ use Inertia\Response;
 
 class CompanyProfessionalController extends Controller
 {
-    public function index(): Response
+    public function index(Request $request): Response
     {
-        $company = Auth::user();
+        $user = Auth::user();
+        $professionals = [];
+        $areas = [];
         
-        $professionals = $company->professionals()
-            ->with(['companyAreas' => function($query) use ($company) {
-                $query->where('company_professional_area.company_id', $company->id);
-            }])
-            ->withCount(['assignedTasks' => function($query) use ($company) {
-                $query->where('company_id', $company->id);
-            }])
-            ->get();
+        $targetCompanyId = $user->isAdmin() ? $request->company_id : $user->id;
 
-        $areas = $company->taskAreas()->get(['id', 'name']);
+        if ($targetCompanyId) {
+            $company = User::find($targetCompanyId);
+            if ($company && ($user->isAdmin() || $company->id === $user->id)) {
+                $professionals = $company->professionals()
+                    ->with(['companyAreas' => function($query) use ($company) {
+                        $query->where('company_professional_area.company_id', $company->id);
+                    }])
+                    ->withCount(['assignedTasks' => function($query) use ($company) {
+                        $query->where('company_id', $company->id);
+                    }])
+                    ->get();
+                
+                $areas = $company->taskAreas()->get(['id', 'name']);
+            }
+        }
+
+        $companies = $user->isAdmin()
+            ? User::where('user_type', 'company')->get(['id', 'name'])
+            : [];
 
         return Inertia::render('Company/Professionals', [
             'professionals' => $professionals,
             'areas' => $areas,
+            'companies' => $companies,
         ]);
     }
 
     public function addProfessional(Request $request): RedirectResponse
     {
+        $user = Auth::user();
         $request->validate([
             'professional_id' => ['required', 'numeric', 'exists:users,id'],
             'task_area_ids' => ['required', 'array'],
             'task_area_ids.*' => ['exists:task_areas,id'],
+            'company_id' => [$user->isAdmin() ? 'required' : 'nullable', 'exists:users,id'],
         ]);
 
-        $company = Auth::user();
+        $companyId = $user->isAdmin() ? $request->company_id : $user->id;
+        $company = User::findOrFail($companyId);
         $professional = User::findOrFail($request->professional_id);
 
         if ($professional->user_type !== 'professional') {
@@ -59,9 +76,14 @@ class CompanyProfessionalController extends Controller
         return redirect()->back()->with('message', 'Professional authorized successfully.');
     }
 
-    public function removeProfessional(User $user): RedirectResponse
+    public function removeProfessional(Request $request, User $user): RedirectResponse
     {
-        $company = Auth::user();
+        $authUser = Auth::user();
+        $companyId = $authUser->isAdmin() ? $request->company_id : $authUser->id;
+        
+        if (!$companyId) abort(400, 'Company ID is required.');
+
+        $company = User::findOrFail($companyId);
         $company->professionals()->detach($user->id);
         
         // Cleanup areas
@@ -72,15 +94,18 @@ class CompanyProfessionalController extends Controller
 
     public function updatePermissions(Request $request, User $user): RedirectResponse
     {
+        $authUser = Auth::user();
         $validated = $request->validate([
             'task_area_ids' => ['required', 'array'],
             'task_area_ids.*' => ['exists:task_areas,id'],
             'can_view_tasks' => ['required', 'boolean'],
             'can_respond_tasks' => ['required', 'boolean'],
             'can_edit_tasks' => ['required', 'boolean'],
+            'company_id' => [$authUser->isAdmin() ? 'required' : 'nullable', 'exists:users,id'],
         ]);
 
-        $company = Auth::user();
+        $companyId = $authUser->isAdmin() ? $validated['company_id'] : $authUser->id;
+        $company = User::findOrFail($companyId);
         
         // Update pivot basic permissions
         $company->professionals()->updateExistingPivot($user->id, [
