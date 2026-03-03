@@ -62,6 +62,16 @@ test('admin can deactivate a user', function () {
     $this->assertFalse($userToDeactivate->fresh()->is_active);
 });
 
+test('admin can update a user role', function () {
+    $user = User::factory()->professional()->create(['role' => 'user']);
+
+    $this->actingAs($this->admin)
+        ->patch(route('users.update-role', $user), ['role' => 'admin'])
+        ->assertRedirect();
+
+    $this->assertEquals('admin', $user->fresh()->role);
+});
+
 test('inactive user is logged out by middleware', function () {
     $user = User::factory()->professional()->create(['is_active' => false]);
 
