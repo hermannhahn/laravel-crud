@@ -217,7 +217,13 @@ const removeProfessional = (pro: any) => {
                                             <Checkbox v-model:checked="pro.pivot.can_edit_tasks" @change="updatePermissions(pro)" />
                                         </td>
                                         <td class="px-4 py-4 text-right">
-                                            <button @click="removeProfessional(pro)" class="text-red-600 hover:text-red-900 text-sm">Deauthorize</button>
+                                            <button 
+                                                @click.stop="removeProfessional(pro)" 
+                                                class="p-1.5 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-full transition-colors"
+                                                title="Deauthorize Professional"
+                                            >
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7a4 4 0 11-8 0 4 4 0 018 0zM9 14a6 6 0 00-6 6v1h12v-1a6 6 0 00-6-6zM21 12H15"></path></svg>
+                                            </button>
                                         </td>
                                     </tr>
                                 </tbody>

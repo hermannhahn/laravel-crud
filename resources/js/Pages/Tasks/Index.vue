@@ -183,16 +183,34 @@ const getStatusClass = (status: string) => {
                                                 {{ task.professional.name || 'Unassigned' }}
                                             </div>
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-3">
+                                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
                                             <button 
                                                 v-if="$page.props.auth.user.user_type === 'professional' && !task.professional.id"
                                                 @click.stop="router.post(route('tasks.accept', task.id))"
-                                                class="text-green-600 dark:text-green-400 hover:underline"
+                                                class="p-1.5 text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/30 rounded-full transition-colors"
+                                                title="Accept Task"
                                             >
-                                                Accept
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                                             </button>
-                                            <Link v-if="task.can.update" :href="route('tasks.edit', task.id)" @click.stop class="text-indigo-600 dark:text-indigo-400 hover:underline">Edit</Link>
-                                            <button v-if="task.can.delete" @click.stop="deleteTask(task.id)" class="text-red-600 dark:text-red-400 hover:underline">Delete</button>
+                                            
+                                            <Link 
+                                                v-if="task.can.update" 
+                                                :href="route('tasks.edit', task.id)" 
+                                                @click.stop 
+                                                class="inline-block p-1.5 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-full transition-colors"
+                                                title="Edit Task"
+                                            >
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                            </Link>
+
+                                            <button 
+                                                v-if="task.can.delete" 
+                                                @click.stop="deleteTask(task.id)" 
+                                                class="p-1.5 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-full transition-colors"
+                                                title="Delete Task"
+                                            >
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                            </button>
                                         </td>
                                     </tr>
                                 </tbody>
