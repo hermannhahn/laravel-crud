@@ -11,6 +11,8 @@ use App\Http\Controllers\UserPermissionController;
 use App\Http\Controllers\UserProfileController;
 use App\Http\Controllers\CompanyProfessionalController;
 use App\Http\Controllers\TaskAreaController;
+use App\Http\Controllers\ServiceController;
+use App\Http\Controllers\DashboardController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -20,8 +22,6 @@ Route::get('/', function () {
         'phpVersion' => PHP_VERSION,
     ]);
 });
-
-use App\Http\Controllers\DashboardController;
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
 
@@ -33,7 +33,6 @@ Route::middleware('auth')->group(function () {
     // New Profile routes (Image, data, password)
     Route::get('/user-profile', [UserProfileController::class, 'edit'])->name('user-profile.edit');
     Route::post('/user-profile', [UserProfileController::class, 'update'])->name('user-profile.update');
-    Route::post('/user-profile/password', [UserProfileController::class, 'updatePassword'])->name('user-profile.password');
 
     Route::resource('tasks', TaskController::class);
     Route::post('/tasks/{task}/respond', [TaskController::class, 'respond'])->name('tasks.respond');
@@ -41,27 +40,29 @@ Route::middleware('auth')->group(function () {
     Route::post('/tasks/{task}/release', [TaskController::class, 'release'])->name('tasks.release');
     Route::post('/tasks/{task}/unassign', [TaskController::class, 'unassign'])->name('tasks.unassign');
 
-    // Company Professionals and Area management
-    Route::middleware('auth')->group(function () {
-        Route::get('/professionals', [CompanyProfessionalController::class, 'index'])->name('professionals.index');
-        Route::post('/professionals/add', [CompanyProfessionalController::class, 'addProfessional'])->name('professionals.add');
-        Route::delete('/professionals/{user}', [CompanyProfessionalController::class, 'removeProfessional'])->name('professionals.remove');
-        Route::patch('/professionals/{user}/permissions', [CompanyProfessionalController::class, 'updatePermissions'])->name('professionals.update-permissions');
-        
-        Route::get('/areas', [TaskAreaController::class, 'index'])->name('areas.index');
-        Route::post('/areas', [TaskAreaController::class, 'store'])->name('areas.store');
-        Route::delete('/areas/{area}', [TaskAreaController::class, 'destroy'])->name('areas.destroy');
-    });
+    Route::get('/professionals', [CompanyProfessionalController::class, 'index'])->name('professionals.index');
+    Route::post('/professionals/add', [CompanyProfessionalController::class, 'addProfessional'])->name('professionals.add');
+    Route::delete('/professionals/{user}', [CompanyProfessionalController::class, 'removeProfessional'])->name('professionals.remove');
+    Route::patch('/professionals/{user}/permissions', [CompanyProfessionalController::class, 'updatePermissions'])->name('professionals.update-permissions');
 
-    Route::middleware('admin')->group(function () {
-        Route::get('/users', [UserController::class, 'index'])->name('users.index');
-        Route::get('/users/{user}', [UserController::class, 'show'])->name('users.show');
-        Route::get('/users/{user}/permissions', [UserPermissionController::class, 'edit'])->name('users.permissions.edit');
-        Route::patch('/users/{user}/role', [UserController::class, 'updateRole'])->name('users.update-role');
-        Route::patch('/users/{user}/toggle-status', [UserController::class, 'toggleStatus'])->name('users.toggle-status');
-        Route::put('/users/{user}/permissions', [UserPermissionController::class, 'update'])->name('users.permissions.update');
-        Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
-    });
+    // Areas
+    Route::get('/areas', [TaskAreaController::class, 'index'])->name('areas.index');
+    Route::post('/areas', [TaskAreaController::class, 'store'])->name('areas.store');
+    Route::delete('/areas/{area}', [TaskAreaController::class, 'destroy'])->name('areas.destroy');
+
+    // Services
+    Route::get('/services', [ServiceController::class, 'index'])->name('services.index');
+    Route::post('/services', [ServiceController::class, 'store'])->name('services.store');
+    Route::delete('/services/{service}', [ServiceController::class, 'destroy'])->name('services.destroy');
+});
+
+Route::middleware('admin')->group(function () {
+    Route::get('/users', [UserController::class, 'index'])->name('users.index');
+    Route::get('/users/{user}', [UserController::class, 'show'])->name('users.show');
+    Route::patch('/users/{user}/toggle-status', [UserController::class, 'toggleStatus'])->name('users.toggle-status');
+    Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+    Route::get('/users/{user}/permissions', [UserPermissionController::class, 'index'])->name('users.permissions.index');
+    Route::post('/users/{user}/permissions', [UserPermissionController::class, 'update'])->name('users.permissions.update');
 });
 
 require __DIR__.'/auth.php';

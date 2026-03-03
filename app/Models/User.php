@@ -69,6 +69,11 @@ class User extends Authenticatable
         return $this->hasMany(TaskArea::class, 'company_id');
     }
 
+    public function services(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Service::class, 'company_id');
+    }
+
     // Link between Companies and Professionals
     public function professionals(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
