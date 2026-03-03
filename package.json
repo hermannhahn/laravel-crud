@@ -3,10 +3,11 @@
     "private": true,
     "type": "module",
     "scripts": {
-        "build": "vue-tsc && vite build && vite build --ssr",
-        "dev": "vite",
+        "setup": "cp .env.example .env && composer install && npm install && ./vendor/bin/sail up -d && sleep 10 && ./vendor/bin/sail artisan key:generate && ./vendor/bin/sail artisan migrate && npm run build",
         "start": "./vendor/bin/sail up -d",
         "stop": "./vendor/bin/sail stop",
+        "build": "vue-tsc && vite build && vite build --ssr",
+        "dev": "vite",
         "migrate": "./vendor/bin/sail artisan migrate"
     },
     "devDependencies": {

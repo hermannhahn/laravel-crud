@@ -1,61 +1,29 @@
-# Laravel CRUD Multi-Tenant Project
+# Laravel CRUD Project
 
-A professional task management system with multi-tenant support, featuring **Laravel 12**, **Inertia.js (Vue 3)**, **Tailwind CSS**, and **Docker (Sail)**.
+A professional task management system with multi-tenant support.
 
-## 🚀 Installation & Setup
+## 🚀 Quick Start
 
-Follow these steps to get the system running locally:
+Follow these steps to get the system running:
 
-1.  **Clone the repository:**
+1.  **Clone & Setup:**
     ```bash
     git clone <repository-url>
     cd laravel-crud
+    npm run setup
     ```
 
-2.  **Install dependencies:**
-    ```bash
-    composer install
-    npm install
-    ```
-
-3.  **Prepare environment:**
-    ```bash
-    cp .env.example .env
-    php artisan key:generate
-    ```
-
-4.  **Start the server:**
-    ```bash
-    npm run start
-    ```
-
-5.  **Initialize Database & Assets:**
-    ```bash
-    npm run migrate
-    npm run build
-    ```
-
-6.  **Access the System:**
+2.  **Access:**
     Open [http://localhost](http://localhost) in your browser.
+    *Register the first user to automatically become the **System Administrator**.*
 
-    *Note: The **first user registered** at `http://localhost/register` will automatically become the **System Administrator**.*
+3.  **Stop:**
+    ```bash
+    npm run stop
+    ```
 
-## 🛠️ Management Commands
+## 🛠️ Commands
 
-- `npm run start`: Starts the system containers.
-- `npm run stop`: Stops the system.
-- `npm run migrate`: Updates database structure.
-- `npm run build`: Finalizes interface components.
-
-## 🔑 User Roles
-
-- **System Administrator:** Full platform visibility and user management.
-- **Company:** Create tasks and manage service offerings.
-- **Professional:** Execute tasks and track earnings.
-
-## 💰 Financial Tracking
-
-The system includes integrated financial monitoring:
-- **Companies:** View total project expenditures.
-- **Professionals:** Track monthly and lifetime earnings.
-- **Admins:** Oversee total platform financial volume.
+- `npm run start`: Starts the server.
+- `npm run stop`: Stops the server.
+- `npm run setup`: Full initial installation and configuration.
