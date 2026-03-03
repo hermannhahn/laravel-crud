@@ -128,33 +128,22 @@ const submit = () => {
                                 </div>
 
                                 <div>
-                                    <InputLabel for="service_id" value="Service (Optional)" />
+                                    <InputLabel for="service_id" value="Service" />
                                     <select
                                         id="service_id"
                                         v-model="form.service_id"
                                         @change="onServiceChange"
                                         class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm"
                                         :disabled="!form.task_area_id"
+                                        required
                                     >
-                                        <option value="">No predefined service</option>
+                                        <option value="" disabled>Select service...</option>
                                         <option v-for="service in filteredServices" :key="service.id" :value="service.id">
                                             {{ service.title }} (${{ service.price }})
                                         </option>
                                     </select>
                                     <InputError :message="form.errors.service_id" class="mt-2" />
                                 </div>
-                            </div>
-
-                            <div>
-                                <InputLabel for="title" value="Title" />
-                                <TextInput
-                                    id="title"
-                                    type="text"
-                                    class="mt-1 block w-full"
-                                    v-model="form.title"
-                                    required
-                                />
-                                <InputError class="mt-2" :message="form.errors.title" />
                             </div>
 
                             <div class="mt-4">

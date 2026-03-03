@@ -173,6 +173,12 @@ class TaskController extends Controller
 
         $validated = $request->validated();
         
+        // Auto-populate title from service
+        if (!empty($validated['service_id'])) {
+            $service = Service::find($validated['service_id']);
+            $validated['title'] = $service?->title;
+        }
+
         if ($user->isAdmin()) {
             $validated['company_id'] = $request->company_id ?? $user->id;
             $validated['task_area_id'] = $request->task_area_id;
@@ -263,6 +269,13 @@ class TaskController extends Controller
         }
 
         $validated = $request->validated();
+
+        // Auto-populate title from service
+        if (!empty($validated['service_id'])) {
+            $service = Service::find($validated['service_id']);
+            $validated['title'] = $service?->title;
+        }
+
         if ($user->isAdmin() && $request->has('company_id')) {
             $validated['company_id'] = $request->company_id;
         }

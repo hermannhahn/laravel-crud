@@ -16,6 +16,7 @@ const props = defineProps<{
             due_date_formatted: string;
             company: { name: string };
             area: { id: number | null, name: string | null };
+            service: { id: number | null, title: string | null, price: number | null };
             professional: { id: number | null, name: string | null };
             can: { update: boolean; delete: boolean; respond: boolean };
         }>;
@@ -150,16 +151,22 @@ const getStatusClass = (status: string) => {
                                     <tr>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Task / Details</th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Responsible</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Company</th>
                                         <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                                    <tr v-for="task in tasks.data" :key="task.id" class="hover:bg-gray-50 dark:hover:bg-gray-700 transition duration-150">
+                                    <tr 
+                                        v-for="task in tasks.data" 
+                                        :key="task.id" 
+                                        @click="router.get(route('tasks.show', task.id))"
+                                        class="hover:bg-gray-50 dark:hover:bg-gray-700 transition duration-150 cursor-pointer"
+                                    >
                                         <td class="px-6 py-4">
-                                            <div class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ task.title }}</div>
+                                            <div class="text-sm font-medium text-gray-900 dark:text-gray-100">
+                                                {{ task.service.title || task.title }}
+                                            </div>
                                             <div class="flex items-center gap-2 mt-1">
-                                                <span class="text-xs text-gray-500 dark:text-gray-400">{{ task.due_date_formatted || 'No deadline' }}</span>
                                                 <span v-if="task.area.name" class="text-[10px] bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-400 px-1.5 py-0.5 rounded border border-gray-200 dark:border-gray-700 font-bold uppercase">{{ task.area.name }}</span>
                                             </div>
                                         </td>
@@ -170,25 +177,22 @@ const getStatusClass = (status: string) => {
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                                             <div v-if="$page.props.auth.user.user_type === 'professional'">
-                                                <span class="block text-xs uppercase text-gray-400">Company</span>
                                                 {{ task.company.name }}
                                             </div>
                                             <div v-else>
-                                                <span class="block text-xs uppercase text-gray-400">Professional</span>
                                                 {{ task.professional.name || 'Unassigned' }}
                                             </div>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-3">
                                             <button 
                                                 v-if="$page.props.auth.user.user_type === 'professional' && !task.professional.id"
-                                                @click="router.post(route('tasks.accept', task.id))"
+                                                @click.stop="router.post(route('tasks.accept', task.id))"
                                                 class="text-green-600 dark:text-green-400 hover:underline"
                                             >
                                                 Accept
                                             </button>
-                                            <Link :href="route('tasks.show', task.id)" class="text-blue-600 dark:text-blue-400 hover:underline">View</Link>
-                                            <Link v-if="task.can.update" :href="route('tasks.edit', task.id)" class="text-indigo-600 dark:text-indigo-400 hover:underline">Edit</Link>
-                                            <button v-if="task.can.delete" @click="deleteTask(task.id)" class="text-red-600 dark:text-red-400 hover:underline">Delete</button>
+                                            <Link v-if="task.can.update" :href="route('tasks.edit', task.id)" @click.stop class="text-indigo-600 dark:text-indigo-400 hover:underline">Edit</Link>
+                                            <button v-if="task.can.delete" @click.stop="deleteTask(task.id)" class="text-red-600 dark:text-red-400 hover:underline">Delete</button>
                                         </td>
                                     </tr>
                                 </tbody>

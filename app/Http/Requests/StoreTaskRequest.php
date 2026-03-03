@@ -23,12 +23,12 @@ class StoreTaskRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title' => ['required', 'string', 'max:255'],
+            'title' => ['nullable', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
             'status' => ['required', Rule::in(['pending', 'in_progress', 'completed'])],
             'due_date' => ['nullable', 'date', 'after_or_equal:today'],
-            'task_area_id' => ['nullable', 'exists:task_areas,id'],
-            'service_id' => ['nullable', 'exists:services,id'],
+            'task_area_id' => ['required', 'exists:task_areas,id'],
+            'service_id' => ['required', 'exists:services,id'],
             'professional_id' => ['nullable', 'exists:users,id'],
         ];
     }
