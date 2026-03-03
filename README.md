@@ -2,6 +2,15 @@
 
 A professional task management system with multi-tenant support.
 
+## 📋 Requirements
+
+Ensure you have the following installed:
+- **Git**
+- **Node.js & npm**
+- **Docker & Docker Compose**
+
+*Note: You **do not** need PHP or Composer installed locally; the system runs entirely via Docker.*
+
 ## 🚀 Quick Start
 
 Follow these steps to get the system running:
