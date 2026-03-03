@@ -4,7 +4,7 @@ A professional task management system with multi-tenant support, featuring **Lar
 
 ## 🚀 Installation Guide
 
-Follow these steps to set up the project locally using Laravel Sail:
+Follow these steps to set up the project locally:
 
 1.  **Clone the repository:**
     ```bash
@@ -23,25 +23,37 @@ Follow these steps to set up the project locally using Laravel Sail:
     php artisan key:generate
     ```
 
-4.  **Start the Docker containers:**
+4.  **Install Node dependencies:**
     ```bash
-    ./vendor/bin/sail up -d
+    npm install
     ```
 
-5.  **Run Migrations:**
+5.  **Start the environment:**
     ```bash
-    ./vendor/bin/sail artisan migrate
+    npm run start
     ```
 
-6.  **Install and Build Frontend:**
+6.  **Run Migrations:**
     ```bash
-    ./vendor/bin/sail npm install
-    ./vendor/bin/sail npm run build
+    npm run migrate
     ```
 
-7.  **First Access (Administrator Registration):**
+7.  **Build Frontend:**
+    ```bash
+    npm run build
+    ```
+
+8.  **First Access (Administrator Registration):**
     Open `http://localhost/register` in your browser. 
     **Important:** The **first user registered** in a fresh database is automatically granted the **System Administrator** role with full access.
+
+## 🛠️ Commands
+
+- `npm run start`: Starts the Docker containers in the background.
+- `npm run stop`: Stops the Docker containers.
+- `npm run migrate`: Runs the database migrations.
+- `npm run build`: Compiles the frontend assets for production.
+- `npm run dev`: Starts the Vite development server.
 
 ## 🔑 User Roles
 
@@ -55,12 +67,6 @@ The system includes a dedicated **Finance** module:
 - **Companies:** Track total spending on completed tasks.
 - **Professionals:** Monitor total earnings and monthly performance.
 - **Admins:** Global view of the entire platform's financial volume.
-
-## 🛠️ Main Features
-- **Multi-Tenant Architecture:** Data isolation between companies and professionals.
-- **Task Marketplace:** Professionals see and accept tasks from authorized companies.
-- **Interactive Dashboard:** Visual charts and real-time statistics.
-- **Dark Mode Support:** Full compatibility with system-wide dark themes.
 
 ## 📂 Documentation
 - [Technical Details](./docs/technical.md)

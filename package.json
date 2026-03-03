@@ -6,7 +6,8 @@
         "build": "vue-tsc && vite build && vite build --ssr",
         "dev": "vite",
         "start": "./vendor/bin/sail up -d",
-        "stop": "./vendor/bin/sail stop"
+        "stop": "./vendor/bin/sail stop",
+        "migrate": "./vendor/bin/sail artisan migrate"
     },
     "devDependencies": {
         "@inertiajs/vue3": "^2.0.0",
