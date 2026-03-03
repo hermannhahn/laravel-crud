@@ -141,9 +141,9 @@ const onFilterChange = () => {
                                     <InputError :message="form.errors.description" class="mt-2" />
                                 </div>
 
-                                <!-- Price -->
+                                <!-- Payout -->
                                 <div>
-                                    <InputLabel for="price" value="Price (USD)" />
+                                    <InputLabel for="price" value="Professional Payout (USD)" />
                                     <TextInput
                                         id="price"
                                         type="number"
@@ -151,7 +151,7 @@ const onFilterChange = () => {
                                         class="mt-1 block w-full"
                                         v-model="form.price"
                                         required
-                                        placeholder="0.00"
+                                        placeholder="Amount to be paid..."
                                     />
                                     <InputError :message="form.errors.price" class="mt-2" />
                                 </div>

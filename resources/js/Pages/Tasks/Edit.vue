@@ -139,7 +139,7 @@ const submit = () => {
                                     >
                                         <option value="" disabled>Select service...</option>
                                         <option v-for="service in filteredServices" :key="service.id" :value="service.id">
-                                            {{ service.title }} (${{ service.price }})
+                                            {{ service.title }} (Payout: ${{ service.price }})
                                         </option>
                                     </select>
                                     <InputError :message="form.errors.service_id" class="mt-2" />
