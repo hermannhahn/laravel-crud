@@ -139,10 +139,11 @@ class TaskController extends Controller
         
         $validated = $request->validated();
         
-        // Auto-populate title from service
+        // Auto-populate title and payout from service
         if (!empty($validated['service_id'])) {
             $service = Service::find($validated['service_id']);
             $validated['title'] = $service?->title;
+            $validated['payout'] = $service?->payout;
         }
 
         if ($user->isAdmin()) {
@@ -156,6 +157,10 @@ class TaskController extends Controller
                 return redirect()->back()
                     ->with('error', 'Monthly task limit reached.');
             }
+        }
+
+        if (isset($validated['status']) && $validated['status'] === 'completed') {
+            $validated['completed_at'] = now();
         }
 
         $validated['user_id'] = $user->id; // Creator
@@ -235,10 +240,15 @@ class TaskController extends Controller
 
         $validated = $request->validated();
 
-        // Auto-populate title from service
+        // Auto-populate title and payout from service
         if (!empty($validated['service_id'])) {
             $service = Service::find($validated['service_id']);
             $validated['title'] = $service?->title;
+            
+            // Only update payout if not set or service changed
+            if (!$task->payout || $task->service_id != $validated['service_id']) {
+                $validated['payout'] = $service?->payout;
+            }
         }
 
         if ($user->isAdmin() && $request->has('company_id')) {

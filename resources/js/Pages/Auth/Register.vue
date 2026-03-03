@@ -4,18 +4,27 @@ import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
-import { Head, Link, useForm } from '@inertiajs/vue3';
+import { Head, Link, useForm, router } from '@inertiajs/vue3';
+
+const props = defineProps<{
+    isFirstUser: boolean;
+}>();
 
 const form = useForm({
     name: '',
     email: '',
     password: '',
     password_confirmation: '',
-    user_type: 'professional',
+    user_type: props.isFirstUser ? 'company' : 'professional',
 });
 
 const submit = () => {
-    form.post(route('register'), {
+    const data: any = { ...form.data() };
+    if (props.isFirstUser) {
+        delete data.user_type;
+    }
+
+    router.post(route('register'), data, {
         onFinish: () => {
             form.reset('password', 'password_confirmation');
         },
@@ -26,6 +35,10 @@ const submit = () => {
 <template>
     <GuestLayout>
         <Head title="Register" />
+
+        <div v-if="isFirstUser" class="mb-4 p-4 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-200 rounded-lg text-sm">
+            <strong>First User Registration:</strong> You will be registered as a <strong>System Administrator</strong> with full access.
+        </div>
 
         <form @submit.prevent="submit">
             <div>
@@ -51,10 +64,15 @@ const submit = () => {
                     id="user_type"
                     v-model="form.user_type"
                     class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm"
+                    :class="{ 'opacity-50 cursor-not-allowed bg-gray-100 dark:bg-gray-800': isFirstUser }"
+                    :disabled="isFirstUser"
                     required
                 >
-                    <option value="professional">Professional</option>
-                    <option value="company">Company</option>
+                    <option v-if="isFirstUser" value="company">Administrator</option>
+                    <template v-else>
+                        <option value="professional">Professional</option>
+                        <option value="company">Company</option>
+                    </template>
                 </select>
 
                 <InputError class="mt-2" :message="form.errors.user_type" />

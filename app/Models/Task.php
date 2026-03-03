@@ -24,12 +24,14 @@ class Task extends Model
         'status',
         'due_date',
         'completed_at',
+        'payout',
     ];
 
     protected $casts = [
         'due_date' => 'date',
         'completed_at' => 'datetime',
         'status' => 'string',
+        'payout' => 'decimal:2',
     ];
 
     public function user(): BelongsTo

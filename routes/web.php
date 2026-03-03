@@ -13,6 +13,7 @@ use App\Http\Controllers\CompanyProfessionalController;
 use App\Http\Controllers\ProfessionController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\FinanceController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -60,6 +61,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/services/{service}/edit', [ServiceController::class, 'edit'])->name('services.edit');
     Route::put('/services/{service}', [ServiceController::class, 'update'])->name('services.update');
     Route::delete('/services/{service}', [ServiceController::class, 'destroy'])->name('services.destroy');
+
+    Route::get('/finance', [FinanceController::class, 'index'])->name('finance.index');
 });
 
 Route::middleware('admin')->group(function () {

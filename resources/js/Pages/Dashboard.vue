@@ -25,8 +25,17 @@ const props = defineProps<{
     stats?: {
         pending: number;
         completed: number;
+        total_earnings?: number;
+        monthly_earnings?: number;
     };
 }>();
+
+const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+    }).format(value);
+};
 
 const page = usePage();
 const user = computed(() => page.props.auth.user);
@@ -89,18 +98,31 @@ const professionalChartData = computed(() => ({
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
                 
                 <!-- Stats Text Cards -->
-                <div v-if="stats" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div v-if="stats" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     <!-- Pending Tasks (Shared) -->
                     <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border-l-4 border-yellow-500">
                         <div class="text-sm text-gray-500 dark:text-gray-400 uppercase font-bold">Total Pending Tasks</div>
                         <div class="text-3xl font-bold dark:text-white">{{ stats.pending }}</div>
                     </div>
 
-                    <!-- Completed Tasks (Shared Label for simplicity) -->
+                    <!-- Completed Tasks (Shared) -->
                     <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border-l-4 border-green-500">
                         <div class="text-sm text-gray-500 dark:text-gray-400 uppercase font-bold">Total Completed Tasks</div>
                         <div class="text-3xl font-bold dark:text-white">{{ stats.completed }}</div>
                     </div>
+
+                    <!-- Financial Stats (Professional only) -->
+                    <template v-if="user.user_type === 'professional'">
+                        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border-l-4 border-blue-500">
+                            <div class="text-sm text-gray-500 dark:text-gray-400 uppercase font-bold">Total Earnings</div>
+                            <div class="text-3xl font-bold dark:text-white text-blue-600">{{ formatCurrency(stats.total_earnings || 0) }}</div>
+                        </div>
+
+                        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border-l-4 border-indigo-500">
+                            <div class="text-sm text-gray-500 dark:text-gray-400 uppercase font-bold">Earnings This Month</div>
+                            <div class="text-3xl font-bold dark:text-white text-indigo-600">{{ formatCurrency(stats.monthly_earnings || 0) }}</div>
+                        </div>
+                    </template>
                 </div>
 
                 <!-- Chart Section -->

@@ -23,11 +23,20 @@
 - [x] **Search Enhancements:**
     - [x] Search by Professional Name.
     - [x] Search by Company Name.
+- [x] **Finance Module:**
+    - [x] Implementation of Finance screen with tables and filters.
+    - [x] Payout tracking (Company spend vs Professional earnings).
+    - [x] Global financial volume for Admin.
+    - [x] Dark mode support for all financial components.
+- [x] **Dashboard Enhancements:**
+    - [x] Professional dashboard with monthly and total earnings cards.
+- [x] **Smart Onboarding:**
+    - [x] Automatic Admin role for the first user registered in the system.
+    - [x] Visual registration warning for the first user.
 - [x] UI/UX General Refinement:
     - [x] Tasks: Add search bar and status/area filters to the index page.
     - [x] Tasks: Implement sorting (due date, latest).
     - [x] Notifications: Implement a global Toast system for success/error messages.
     - [x] Styling: General layout polish (empty states, buttons, transitions).
-
 - [x] Create automated integration tests (Pest).
-- [ ] Final polishing and documentation review.
+- [x] Final polishing and documentation review.

@@ -20,7 +20,9 @@ class RegisteredUserController extends Controller
      */
     public function create(): Response
     {
-        return Inertia::render('Auth/Register');
+        return Inertia::render('Auth/Register', [
+            'isFirstUser' => User::count() === 0
+        ]);
     }
 
     /**
@@ -30,19 +32,33 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        $request->validate([
+        $isFirstUser = User::count() === 0;
+
+        $rules = [
             'name' => 'required|string|max:255',
             'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'user_type' => ['required', 'string', 'in:company,professional'],
-        ]);
+        ];
 
-        $user = User::create([
+        if (!$isFirstUser) {
+            $rules['user_type'] = ['required', 'string', 'in:company,professional'];
+        }
+
+        $request->validate($rules);
+
+        $userData = [
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'user_type' => $request->user_type,
-        ]);
+            'user_type' => $isFirstUser ? 'company' : $request->user_type,
+        ];
+
+        if ($isFirstUser) {
+            $userData['role'] = 'admin';
+            $userData['is_active'] = true;
+        }
+
+        $user = User::create($userData);
 
         event(new Registered($user));
 
