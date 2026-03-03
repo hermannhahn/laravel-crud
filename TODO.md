@@ -16,6 +16,13 @@
 - [x] Task Areas and Professional Specialties (Multi-Area & Multi-Company support).
 - [x] Task "Claim/Release" Flow (Internal Marketplace).
 - [x] ID-based Professional Authorization system.
+- [x] **Admin Global Management:**
+    - [x] Admin Dashboard: Global stats (Pending/Completed) and charts.
+    - [x] Admin Navigation: Visible "Professionals" and "Areas" tabs.
+    - [x] Admin CRUD: Create Areas and Authorize Professionals for any company.
+- [x] **Search Enhancements:**
+    - [x] Search by Professional Name.
+    - [x] Search by Company Name.
 - [x] UI/UX General Refinement:
     - [x] Tasks: Add search bar and status/area filters to the index page.
     - [x] Tasks: Implement sorting (due date, latest).

@@ -26,10 +26,17 @@ This file contains instructions, standards, and critical session data for the La
     - Filtering & Sorting: Integrated in the main tasks list.
     - Notifications: Global Toast system replaces static flash messages.
 
+## 🌟 Admin Super-Powers
+- **Global Dashboard:** Admin sees total pending and completed tasks across all companies, including a global performance chart.
+- **Multi-Company Management:** Admin can create areas and authorize professionals for ANY company by selecting them from a dropdown.
+- **Global Visibility:** Admin can view and manage all tasks, areas, and users in the system.
+
+## 🔍 Task Search Capabilities
+- Users can search tasks by **Title**, **Description**, **Professional Name**, and **Company Name**.
+
 ## 📍 Project State (Last Stopped)
-- **Status:** Multi-company and Multi-area support validated.
-- **Last Action:** Registered "Global Services" (ID 6) and "Alice Dev" (ID 7). Alice is linked to both companies in different areas.
-- **Next Steps:** Implement search and sorting refinements if needed.
+- **Status:** Admin views and global stats fully implemented and validated. Task search enhanced.
+- **Last Action:** Updated `DashboardController`, `TaskController`, `CompanyProfessionalController`, and `TaskAreaController` for Admin awareness.
 
 ## 🛠️ Workflow Reminders
 1. **Testing:** Use `chrome-devtools` extension. Re-use existing tabs/windows.
