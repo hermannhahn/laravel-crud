@@ -61,7 +61,7 @@ Route::middleware('admin')->group(function () {
     Route::get('/users/{user}', [UserController::class, 'show'])->name('users.show');
     Route::patch('/users/{user}/toggle-status', [UserController::class, 'toggleStatus'])->name('users.toggle-status');
     Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
-    Route::get('/users/{user}/permissions', [UserPermissionController::class, 'index'])->name('users.permissions.index');
+    Route::get('/users/{user}/permissions', [UserPermissionController::class, 'edit'])->name('users.permissions.edit');
     Route::post('/users/{user}/permissions', [UserPermissionController::class, 'update'])->name('users.permissions.update');
 });
 
