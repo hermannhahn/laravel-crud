@@ -32,7 +32,7 @@ class CompanyProfessionalController extends Controller
                     }])
                     ->get();
                 
-                $professions = $company->professions()->get(['id', 'name']);
+                $professions = $company->professions()->get(['professions.id', 'professions.name']);
             }
         }
 

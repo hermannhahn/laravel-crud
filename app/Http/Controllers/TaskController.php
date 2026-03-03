@@ -109,8 +109,8 @@ class TaskController extends Controller
         $professionals = [];
         if ($targetCompanyId) {
             $company = User::findOrFail($targetCompanyId);
-            $professions = $company->professions()->get(['id', 'name']);
-            $professionals = $company->professionals()->get(['id', 'name']);
+            $professions = $company->professions()->get(['professions.id', 'professions.name']);
+            $professionals = $company->professionals()->get(['users.id', 'users.name']);
         }
 
         $companies = $user->isAdmin()
@@ -204,8 +204,8 @@ class TaskController extends Controller
         $targetCompanyId = $user->isAdmin() ? ($request->company_id ?? $task->company_id) : $task->company_id;
         $company = User::findOrFail($targetCompanyId);
 
-        $professions = $company->professions()->get(['id', 'name']);
-        $professionals = $company->professionals()->get(['id', 'name']);
+        $professions = $company->professions()->get(['professions.id', 'professions.name']);
+        $professionals = $company->professionals()->get(['users.id', 'users.name']);
 
         $companies = $user->isAdmin()
             ? User::where('user_type', 'company')->get(['id', 'name'])
