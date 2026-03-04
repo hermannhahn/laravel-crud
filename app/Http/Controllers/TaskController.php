@@ -240,6 +240,11 @@ class TaskController extends Controller
 
         $validated = $request->validated();
 
+        // Security: If task is completed, only admin can change status or edit details
+        if ($task->status === 'completed' && !$user->isAdmin()) {
+            return redirect()->back()->with('error', 'Completed tasks cannot be modified by users. Please contact an Administrator.');
+        }
+
         // Auto-populate title and payout from service
         if (!empty($validated['service_id'])) {
             $service = Service::find($validated['service_id']);

@@ -27,6 +27,8 @@ const props = defineProps<{
         completed: number;
         total_earnings?: number;
         monthly_earnings?: number;
+        monthly_revenue?: number;
+        commission_rate?: number;
     };
 }>();
 
@@ -110,6 +112,15 @@ const professionalChartData = computed(() => ({
                         <div class="text-sm text-gray-500 dark:text-gray-400 uppercase font-bold">Total Completed Tasks</div>
                         <div class="text-3xl font-bold dark:text-white">{{ stats.completed }}</div>
                     </div>
+
+                    <!-- Admin Revenue (Admin only) -->
+                    <template v-if="user.role === 'admin'">
+                        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border-l-4 border-purple-500">
+                            <div class="text-sm text-gray-500 dark:text-gray-400 uppercase font-bold">Monthly Platform Revenue</div>
+                            <div class="text-3xl font-bold dark:text-white text-purple-600">{{ formatCurrency(stats.monthly_revenue || 0) }}</div>
+                            <div class="text-xs text-gray-400 mt-1">Rate: {{ stats.commission_rate }}%</div>
+                        </div>
+                    </template>
 
                     <!-- Financial Stats (Professional only) -->
                     <template v-if="user.user_type === 'professional'">

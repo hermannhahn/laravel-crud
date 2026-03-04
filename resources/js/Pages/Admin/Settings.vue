@@ -12,6 +12,7 @@ const props = defineProps<{
         app_name: string;
         app_logo: string | null;
         help_content: string;
+        admin_commission_percentage: number;
     }
 }>();
 
@@ -19,6 +20,7 @@ const form = useForm({
     app_name: props.settings.app_name,
     app_logo: null as File | null,
     help_content: props.settings.help_content,
+    admin_commission_percentage: String(props.settings.admin_commission_percentage),
 });
 
 const logoPreview = ref(props.settings.app_logo);
@@ -87,6 +89,23 @@ const submit = () => {
                                     />
                                 </div>
                                 <InputError :message="form.errors.app_logo" class="mt-2" />
+                            </div>
+
+                            <!-- Commission Percentage -->
+                            <div>
+                                <InputLabel for="admin_commission_percentage" value="Platform Commission (%)" />
+                                <TextInput
+                                    id="admin_commission_percentage"
+                                    type="number"
+                                    step="0.01"
+                                    min="0"
+                                    max="100"
+                                    class="mt-1 block w-24"
+                                    v-model="form.admin_commission_percentage"
+                                    required
+                                />
+                                <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Percentage of task payout collected by the platform.</p>
+                                <InputError :message="form.errors.admin_commission_percentage" class="mt-2" />
                             </div>
 
                             <!-- Help Content -->

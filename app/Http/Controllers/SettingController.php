@@ -22,6 +22,7 @@ class SettingController extends Controller
                 'app_name' => Setting::get('app_name', config('app.name')),
                 'app_logo' => Setting::get('app_logo'),
                 'help_content' => Setting::get('help_content', ''),
+                'admin_commission_percentage' => (float) Setting::get('admin_commission_percentage', 0),
             ]
         ]);
     }
@@ -37,6 +38,7 @@ class SettingController extends Controller
             'app_name' => 'nullable|string|max:255',
             'app_logo' => 'nullable|image|mimes:jpeg,png,jpg,svg|max:2048',
             'help_content' => 'nullable|string',
+            'admin_commission_percentage' => 'nullable|numeric|min:0|max:100',
         ]);
 
         if ($request->has('app_name')) {
@@ -59,6 +61,11 @@ class SettingController extends Controller
         if ($request->has('help_content')) {
             Log::info('Updating help_content');
             Setting::set('help_content', $request->help_content);
+        }
+
+        if ($request->has('admin_commission_percentage')) {
+            Log::info('Updating admin_commission_percentage: ' . $request->admin_commission_percentage);
+            Setting::set('admin_commission_percentage', $request->admin_commission_percentage);
         }
 
         return redirect()->back()->with('message', 'Settings updated successfully.');

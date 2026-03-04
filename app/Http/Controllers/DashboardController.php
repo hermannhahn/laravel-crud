@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Task;
+use App\Models\Setting;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -21,9 +22,19 @@ class DashboardController extends Controller
         $days = collect(range(4, 0))->map(fn($i) => Carbon::today()->subDays($i));
 
         if ($user->isAdmin()) {
+            $monthlyCompletedTasks = Task::where('status', 'completed')
+                ->whereMonth('completed_at', Carbon::now()->month)
+                ->whereYear('completed_at', Carbon::now()->year);
+
+            $totalVolume = $monthlyCompletedTasks->sum('payout');
+            $commissionPercent = (float) Setting::get('admin_commission_percentage', 0);
+            $adminRevenue = ($totalVolume * $commissionPercent) / 100;
+
             $data['stats'] = [
                 'pending' => Task::where('status', '!=', 'completed')->count(),
                 'completed' => Task::where('status', 'completed')->count(),
+                'monthly_revenue' => $adminRevenue,
+                'commission_rate' => $commissionPercent,
             ];
 
             $data['chartData'] = $days->map(function ($date) {
