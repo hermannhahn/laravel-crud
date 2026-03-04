@@ -26,10 +26,10 @@ const props = defineProps<{
         pending: number;
         completed: number;
         monthly_earnings?: number;
-        projected_earnings?: number;
+        total_projected_earnings?: number;
         monthly_spent?: number;
-        monthly_committed?: number;
-        in_progress_value?: number;
+        total_committed?: number;
+        total_projected_revenue?: number;
         monthly_revenue?: number;
         commission_rate?: number;
     };
@@ -119,15 +119,15 @@ const professionalChartData = computed(() => ({
                     <!-- Admin Revenue (Admin only) -->
                     <template v-if="user.role === 'admin'">
                         <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border-l-4 border-orange-500">
-                            <div class="text-sm text-gray-500 dark:text-gray-400 uppercase font-bold">Projected Revenue (Pending)</div>
-                            <div class="text-3xl font-bold dark:text-white text-orange-600">{{ formatCurrency(stats.in_progress_value || 0) }}</div>
-                            <div class="text-xs text-gray-400 mt-1">From in-progress {{ $page.props.taskLabelPlural }}</div>
+                            <div class="text-sm text-gray-500 dark:text-gray-400 uppercase font-bold">Projected Revenue (Total Pending)</div>
+                            <div class="text-3xl font-bold dark:text-white text-orange-600">{{ formatCurrency(stats.total_projected_revenue || 0) }}</div>
+                            <div class="text-xs text-gray-400 mt-1">From all in-progress {{ $page.props.taskLabelPlural }}</div>
                         </div>
 
                         <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border-l-4 border-purple-500">
                             <div class="text-sm text-gray-500 dark:text-gray-400 uppercase font-bold">Monthly Platform Revenue</div>
                             <div class="text-3xl font-bold dark:text-white text-purple-600">{{ formatCurrency(stats.monthly_revenue || 0) }}</div>
-                            <div class="text-xs text-gray-400 mt-1">Rate: {{ stats.commission_rate }}%</div>
+                            <div class="text-xs text-gray-400 mt-1">Rate: {{ stats.commission_rate }}% (This Month)</div>
                         </div>
                     </template>
 
@@ -139,9 +139,9 @@ const professionalChartData = computed(() => ({
                         </div>
 
                         <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border-l-4 border-indigo-500">
-                            <div class="text-sm text-gray-500 dark:text-gray-400 uppercase font-bold">Committed (Current Month)</div>
-                            <div class="text-3xl font-bold dark:text-white text-indigo-600">{{ formatCurrency(stats.monthly_committed || 0) }}</div>
-                            <div class="text-xs text-gray-400 mt-1">In-progress {{ $page.props.taskLabelPlural }}</div>
+                            <div class="text-sm text-gray-500 dark:text-gray-400 uppercase font-bold">Total Committed (Pending)</div>
+                            <div class="text-3xl font-bold dark:text-white text-indigo-600">{{ formatCurrency(stats.total_committed || 0) }}</div>
+                            <div class="text-xs text-gray-400 mt-1">All in-progress {{ $page.props.taskLabelPlural }}</div>
                         </div>
                     </template>
 
@@ -153,9 +153,9 @@ const professionalChartData = computed(() => ({
                         </div>
 
                         <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border-l-4 border-orange-500">
-                            <div class="text-sm text-gray-500 dark:text-gray-400 uppercase font-bold">Projected Earnings (Pending)</div>
-                            <div class="text-3xl font-bold dark:text-white text-orange-600">{{ formatCurrency(stats.projected_earnings || 0) }}</div>
-                            <div class="text-xs text-gray-400 mt-1">In-progress {{ $page.props.taskLabelPlural }}</div>
+                            <div class="text-sm text-gray-500 dark:text-gray-400 uppercase font-bold">Total Projected Earnings</div>
+                            <div class="text-3xl font-bold dark:text-white text-orange-600">{{ formatCurrency(stats.total_projected_earnings || 0) }}</div>
+                            <div class="text-xs text-gray-400 mt-1">All in-progress {{ $page.props.taskLabelPlural }}</div>
                         </div>
                     </template>
                 </div>

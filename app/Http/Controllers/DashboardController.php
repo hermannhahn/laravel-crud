@@ -36,7 +36,7 @@ class DashboardController extends Controller
             $data['stats'] = [
                 'pending' => Task::where('status', '!=', 'completed')->count(),
                 'completed' => Task::where('status', 'completed')->count(),
-                'in_progress_value' => $adminProjectedRevenue,
+                'total_projected_revenue' => $adminProjectedRevenue,
                 'monthly_revenue' => $adminRevenue,
                 'commission_rate' => $commissionPercent,
             ];
@@ -59,7 +59,7 @@ class DashboardController extends Controller
                     ->whereMonth('completed_at', Carbon::now()->month)
                     ->whereYear('completed_at', Carbon::now()->year)
                     ->sum('payout'),
-                'monthly_committed' => Task::where('company_id', $user->id)
+                'total_committed' => Task::where('company_id', $user->id)
                     ->where('status', 'in_progress')
                     ->sum('payout'),
             ];
@@ -84,7 +84,7 @@ class DashboardController extends Controller
                     ->whereMonth('completed_at', Carbon::now()->month)
                     ->whereYear('completed_at', Carbon::now()->year)
                     ->sum('payout'),
-                'projected_earnings' => $user->assignedTasks()->where('status', 'in_progress')->sum('payout'),
+                'total_projected_earnings' => $user->assignedTasks()->where('status', 'in_progress')->sum('payout'),
             ];
 
             $data['chartData'] = $days->map(function ($date) use ($user) {
