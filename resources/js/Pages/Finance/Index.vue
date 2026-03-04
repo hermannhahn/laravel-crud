@@ -101,7 +101,7 @@ const getStatusClass = (status: string) => {
                     <!-- Total Value (Only for non-admin to show full volume) -->
                     <div class="p-6 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 rounded-lg shadow-sm">
                         <div class="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase">
-                            Total Items
+                            Total {{ $page.props.taskLabelPlural }}
                         </div>
                         <div class="mt-1 text-2xl font-semibold text-gray-900 dark:text-white">
                             {{ stats.total_count }}
