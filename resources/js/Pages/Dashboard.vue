@@ -117,9 +117,9 @@ const professionalChartData = computed(() => ({
                     <!-- Admin Revenue (Admin only) -->
                     <template v-if="user.role === 'admin'">
                         <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border-l-4 border-orange-500">
-                            <div class="text-sm text-gray-500 dark:text-gray-400 uppercase font-bold">Total Value In Progress</div>
+                            <div class="text-sm text-gray-500 dark:text-gray-400 uppercase font-bold">Projected Revenue (Pending)</div>
                             <div class="text-3xl font-bold dark:text-white text-orange-600">{{ formatCurrency(stats.in_progress_value || 0) }}</div>
-                            <div class="text-xs text-gray-400 mt-1">Pending {{ $page.props.taskLabelPlural }}</div>
+                            <div class="text-xs text-gray-400 mt-1">From in-progress {{ $page.props.taskLabelPlural }}</div>
                         </div>
 
                         <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border-l-4 border-purple-500">

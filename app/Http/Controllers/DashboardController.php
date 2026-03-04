@@ -26,14 +26,16 @@ class DashboardController extends Controller
                 ->whereMonth('completed_at', Carbon::now()->month)
                 ->whereYear('completed_at', Carbon::now()->year);
 
-            $totalVolume = $monthlyCompletedTasks->sum('payout');
+            $totalInProgressVolume = Task::where('status', 'in_progress')->sum('payout');
             $commissionPercent = (float) Setting::get('admin_commission_percentage', 0);
+            
             $adminRevenue = ($totalVolume * $commissionPercent) / 100;
+            $adminProjectedRevenue = ($totalInProgressVolume * $commissionPercent) / 100;
 
             $data['stats'] = [
                 'pending' => Task::where('status', '!=', 'completed')->count(),
                 'completed' => Task::where('status', 'completed')->count(),
-                'in_progress_value' => Task::where('status', 'in_progress')->sum('payout'),
+                'in_progress_value' => $adminProjectedRevenue,
                 'monthly_revenue' => $adminRevenue,
                 'commission_rate' => $commissionPercent,
             ];
