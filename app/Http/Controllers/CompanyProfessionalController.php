@@ -124,4 +124,42 @@ class CompanyProfessionalController extends Controller
 
         return redirect()->back()->with('message', 'Professional updated successfully.');
     }
+
+    public function authorizeForAllCompanies(Request $request, User $user): RedirectResponse
+    {
+        if (!Auth::user()->isAdmin()) {
+            abort(403);
+        }
+
+        if ($user->user_type !== 'professional') {
+            abort(400, 'User is not a professional.');
+        }
+
+        $companies = User::where('user_type', 'company')->get();
+
+        foreach ($companies as $company) {
+            // Link Professional to Company with default full permissions
+            $company->professionals()->syncWithoutDetaching([$user->id => [
+                'can_view_tasks' => true,
+                'can_respond_tasks' => true,
+                'can_edit_tasks' => false,
+            ]]);
+
+            // Link to ALL professions of this company
+            $professionIds = Profession::where('company_id', $company->id)->pluck('id')->toArray();
+            
+            foreach($professionIds as $pid) {
+                \Illuminate\Support\Facades\DB::table('company_professional_profession')->updateOrInsert(
+                    [
+                        'company_id' => $company->id,
+                        'professional_id' => $user->id,
+                        'profession_id' => $pid
+                    ],
+                    ['updated_at' => now()]
+                );
+            }
+        }
+
+        return redirect()->back()->with('message', 'Professional authorized for all companies and professions.');
+    }
 }

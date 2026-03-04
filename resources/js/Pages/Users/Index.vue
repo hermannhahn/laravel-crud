@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, useForm, router } from '@inertiajs/vue3';
-
 defineProps<{
     users: {
         data: Array<{
@@ -9,9 +8,11 @@ defineProps<{
             name: string;
             email: string;
             role: string;
+            user_type: string;
             is_active: boolean;
         }>;
-    };
+        links: Array<any>;
+    }
 }>();
 
 const form = useForm({
@@ -34,6 +35,12 @@ const toggleStatus = (id: number) => {
 const deleteUser = (id: number) => {
     if (confirm('Are you sure you want to delete this user? This action is permanent.')) {
         router.delete(route('users.destroy', id));
+    }
+};
+
+const authorizeAll = (id: number) => {
+    if (confirm('This will authorize this professional for ALL companies and ALL professions. Continue?')) {
+        router.post(route('users.authorize-all', id));
     }
 };
 </script>
@@ -107,6 +114,16 @@ const deleteUser = (id: number) => {
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                             <div class="flex items-center justify-end space-x-2">
+                                                <!-- Global Authorization (Only for Professionals) -->
+                                                <button 
+                                                    v-if="user.user_type === 'professional'"
+                                                    @click.stop="authorizeAll(user.id)"
+                                                    class="inline-flex items-center justify-center p-1.5 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-full transition-colors"
+                                                    title="Authorize for All Companies"
+                                                >
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path></svg>
+                                                </button>
+
                                                 <button 
                                                     @click.stop="toggleStatus(user.id)"
                                                     class="inline-flex items-center justify-center p-1.5 text-yellow-600 dark:text-yellow-400 hover:bg-yellow-50 dark:hover:bg-yellow-900/30 rounded-full transition-colors"

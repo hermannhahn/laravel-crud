@@ -76,6 +76,8 @@ Route::middleware('admin')->group(function () {
 
     Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
     Route::post('/settings', [SettingController::class, 'update'])->name('settings.update');
+
+    Route::post('/users/{user}/authorize-all', [CompanyProfessionalController::class, 'authorizeForAllCompanies'])->name('users.authorize-all');
 });
 
 require __DIR__.'/auth.php';
