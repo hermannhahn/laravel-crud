@@ -106,7 +106,7 @@ const professionalChartData = computed(() => ({
                 <div v-if="stats" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     <!-- Pending Tasks (Shared) -->
                     <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border-l-4 border-yellow-500">
-                        <div class="text-sm text-gray-500 dark:text-gray-400 uppercase font-bold">Total Pending {{ $page.props.taskLabelPlural }}</div>
+                        <div class="text-sm text-gray-500 dark:text-gray-400 uppercase font-bold">Pending {{ $page.props.taskLabelPlural }}</div>
                         <div class="text-3xl font-bold dark:text-white">{{ stats.pending }}</div>
                         <div class="text-xs text-gray-400 mt-1">Total Accumulated</div>
                     </div>
@@ -121,7 +121,7 @@ const professionalChartData = computed(() => ({
                     <!-- Admin Revenue (Admin only) -->
                     <template v-if="user.role === 'admin'">
                         <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border-l-4 border-orange-500">
-                            <div class="text-sm text-gray-500 dark:text-gray-400 uppercase font-bold">Projected Revenue (Total Pending)</div>
+                            <div class="text-sm text-gray-500 dark:text-gray-400 uppercase font-bold">Projected Revenue (Pending)</div>
                             <div class="text-3xl font-bold dark:text-white text-orange-600">{{ formatCurrency(stats.total_projected_revenue || 0) }}</div>
                             <div class="text-xs text-gray-400 mt-1">From all in-progress {{ $page.props.taskLabelPlural }}</div>
                         </div>
@@ -142,7 +142,7 @@ const professionalChartData = computed(() => ({
                         </div>
 
                         <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border-l-4 border-indigo-500">
-                            <div class="text-sm text-gray-500 dark:text-gray-400 uppercase font-bold">Total Committed (Pending)</div>
+                            <div class="text-sm text-gray-500 dark:text-gray-400 uppercase font-bold">Committed (Pending)</div>
                             <div class="text-3xl font-bold dark:text-white text-indigo-600">{{ formatCurrency(stats.total_committed || 0) }}</div>
                             <div class="text-xs text-gray-400 mt-1">All in-progress {{ $page.props.taskLabelPlural }}</div>
                         </div>
@@ -157,7 +157,7 @@ const professionalChartData = computed(() => ({
                         </div>
 
                         <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border-l-4 border-orange-500">
-                            <div class="text-sm text-gray-500 dark:text-gray-400 uppercase font-bold">Total Projected Earnings</div>
+                            <div class="text-sm text-gray-500 dark:text-gray-400 uppercase font-bold">Projected Earnings</div>
                             <div class="text-3xl font-bold dark:text-white text-orange-600">{{ formatCurrency(stats.total_projected_earnings || 0) }}</div>
                             <div class="text-xs text-gray-400 mt-1">All in-progress {{ $page.props.taskLabelPlural }}</div>
                         </div>
