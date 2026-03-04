@@ -25,11 +25,10 @@ const props = defineProps<{
     stats?: {
         pending: number;
         completed: number;
-        total_earnings?: number;
         monthly_earnings?: number;
         projected_earnings?: number;
-        total_spent?: number;
-        committed_value?: number;
+        monthly_spent?: number;
+        monthly_committed?: number;
         in_progress_value?: number;
         monthly_revenue?: number;
         commission_rate?: number;
@@ -135,31 +134,26 @@ const professionalChartData = computed(() => ({
                     <!-- Financial Stats (Company only) -->
                     <template v-if="user.user_type === 'company' && user.role !== 'admin'">
                         <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border-l-4 border-blue-500">
-                            <div class="text-sm text-gray-500 dark:text-gray-400 uppercase font-bold">Total Spent</div>
-                            <div class="text-3xl font-bold dark:text-white text-blue-600">{{ formatCurrency(stats.total_spent || 0) }}</div>
+                            <div class="text-sm text-gray-500 dark:text-gray-400 uppercase font-bold">Spent This Month</div>
+                            <div class="text-3xl font-bold dark:text-white text-blue-600">{{ formatCurrency(stats.monthly_spent || 0) }}</div>
                         </div>
 
                         <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border-l-4 border-indigo-500">
-                            <div class="text-sm text-gray-500 dark:text-gray-400 uppercase font-bold">Committed Value</div>
-                            <div class="text-3xl font-bold dark:text-white text-indigo-600">{{ formatCurrency(stats.committed_value || 0) }}</div>
+                            <div class="text-sm text-gray-500 dark:text-gray-400 uppercase font-bold">Committed (Current Month)</div>
+                            <div class="text-3xl font-bold dark:text-white text-indigo-600">{{ formatCurrency(stats.monthly_committed || 0) }}</div>
                             <div class="text-xs text-gray-400 mt-1">In-progress {{ $page.props.taskLabelPlural }}</div>
                         </div>
                     </template>
 
                     <!-- Financial Stats (Professional only) -->
                     <template v-if="user.user_type === 'professional'">
-                        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border-l-4 border-blue-500">
-                            <div class="text-sm text-gray-500 dark:text-gray-400 uppercase font-bold">Total Earnings</div>
-                            <div class="text-3xl font-bold dark:text-white text-blue-600">{{ formatCurrency(stats.total_earnings || 0) }}</div>
-                        </div>
-
                         <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border-l-4 border-indigo-500">
                             <div class="text-sm text-gray-500 dark:text-gray-400 uppercase font-bold">Earnings This Month</div>
                             <div class="text-3xl font-bold dark:text-white text-indigo-600">{{ formatCurrency(stats.monthly_earnings || 0) }}</div>
                         </div>
 
                         <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border-l-4 border-orange-500">
-                            <div class="text-sm text-gray-500 dark:text-gray-400 uppercase font-bold">Projected Earnings</div>
+                            <div class="text-sm text-gray-500 dark:text-gray-400 uppercase font-bold">Projected Earnings (Pending)</div>
                             <div class="text-3xl font-bold dark:text-white text-orange-600">{{ formatCurrency(stats.projected_earnings || 0) }}</div>
                             <div class="text-xs text-gray-400 mt-1">In-progress {{ $page.props.taskLabelPlural }}</div>
                         </div>

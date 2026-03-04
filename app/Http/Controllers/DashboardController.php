@@ -54,8 +54,14 @@ class DashboardController extends Controller
             $data['stats'] = [
                 'pending' => Task::where('company_id', $user->id)->where('status', '!=', 'completed')->count(),
                 'completed' => Task::where('company_id', $user->id)->where('status', 'completed')->count(),
-                'total_spent' => Task::where('company_id', $user->id)->where('status', 'completed')->sum('payout'),
-                'committed_value' => Task::where('company_id', $user->id)->where('status', 'in_progress')->sum('payout'),
+                'monthly_spent' => Task::where('company_id', $user->id)
+                    ->where('status', 'completed')
+                    ->whereMonth('completed_at', Carbon::now()->month)
+                    ->whereYear('completed_at', Carbon::now()->year)
+                    ->sum('payout'),
+                'monthly_committed' => Task::where('company_id', $user->id)
+                    ->where('status', 'in_progress')
+                    ->sum('payout'),
             ];
 
             $data['chartData'] = $days->map(function ($date) use ($user) {
@@ -74,7 +80,6 @@ class DashboardController extends Controller
             $data['stats'] = [
                 'pending' => $user->assignedTasks()->where('status', '!=', 'completed')->count(),
                 'completed' => $user->assignedTasks()->where('status', 'completed')->count(),
-                'total_earnings' => $user->assignedTasks()->where('status', 'completed')->sum('payout'),
                 'monthly_earnings' => $user->assignedTasks()->where('status', 'completed')
                     ->whereMonth('completed_at', Carbon::now()->month)
                     ->whereYear('completed_at', Carbon::now()->year)
