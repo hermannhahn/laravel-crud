@@ -179,7 +179,7 @@ const deleteTask = (id: number) => {
                                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                             <div class="flex items-center justify-end space-x-2">
                                                 <button 
-                                                    v-if="$page.props.auth.user.user_type === 'professional' && !task.professional.id"
+                                                    v-if="$page.props.auth.user.user_type === 'professional' && task.status === 'pending' && (!task.professional.id || task.professional.id === $page.props.auth.user.id)"
                                                     @click.stop="router.post(route('tasks.accept', task.id))"
                                                     class="inline-flex items-center justify-center p-1.5 text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/30 rounded-full transition-colors"
                                                     :title="'Accept ' + $page.props.taskLabelSingular"

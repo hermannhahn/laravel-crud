@@ -300,7 +300,17 @@ class TaskController extends Controller
             abort(403, 'Only professionals can accept tasks.');
         }
 
-        // Check if professional is authorized for this company and profession
+        // 1. If task is already assigned to someone ELSE, fail
+        if ($task->professional_id && $task->professional_id !== $user->id) {
+            abort(400, 'Task already assigned to another professional.');
+        }
+
+        // 2. If task is already in progress or completed, fail
+        if ($task->status !== 'pending') {
+            abort(400, 'Only pending tasks can be accepted.');
+        }
+
+        // 3. Check if professional is authorized for this company and profession
         $isAuthorized = $user->companyProfessions()
             ->where('company_professional_profession.company_id', $task->company_id)
             ->where('company_professional_profession.profession_id', $task->profession_id)
@@ -308,10 +318,6 @@ class TaskController extends Controller
 
         if (!$isAuthorized) {
             abort(403, 'You are not authorized for this company and profession.');
-        }
-
-        if ($task->professional_id) {
-            abort(400, 'Task already assigned to a professional.');
         }
 
         $task->update([

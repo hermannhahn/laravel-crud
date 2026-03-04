@@ -57,7 +57,7 @@ const getStatusClass = (status: string) => {
                 <div class="space-x-2">
                     <!-- Professional Actions -->
                     <button 
-                        v-if="$page.props.auth.user.user_type === 'professional' && !task.professional.id"
+                        v-if="$page.props.auth.user.user_type === 'professional' && task.status === 'pending' && (!task.professional.id || task.professional.id === $page.props.auth.user.id)"
                         @click="router.post(route('tasks.accept', task.id))"
                         class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-500 active:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150"
                         >

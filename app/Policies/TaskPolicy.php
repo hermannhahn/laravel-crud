@@ -25,8 +25,8 @@ class TaskPolicy
         return $user->isAdmin() || 
                ($user->isCompany() && $task->company_id === $user->id) || 
                ($user->isProfessional() && $task->professional_id === $user->id) ||
-               // Pool visibility: professional linked to company and area
-               ($user->isProfessional() && !$task->professional_id && $user->companyAreas()->where('task_areas.id', $task->task_area_id)->wherePivot('company_id', $task->company_id)->exists());
+               // Pool visibility: professional linked to company and profession
+               ($user->isProfessional() && !$task->professional_id && $user->companyProfessions()->where('professions.id', $task->profession_id)->wherePivot('company_id', $task->company_id)->exists());
     }
 
     /**
