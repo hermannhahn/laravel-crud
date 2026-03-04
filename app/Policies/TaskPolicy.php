@@ -34,6 +34,11 @@ class TaskPolicy
      */
     public function create(User $user): bool
     {
+        // Professionals can NEVER create tasks
+        if ($user->isProfessional()) {
+            return false;
+        }
+
         return $user->isCompany() || $user->isAdmin();
     }
 
@@ -42,7 +47,12 @@ class TaskPolicy
      */
     public function update(User $user, Task $task): bool
     {
-        return $user->isAdmin() || ($user->isCompany() && $task->company_id === $user->id);
+        if ($user->isAdmin()) {
+            return true;
+        }
+
+        // Only company owner can edit
+        return $user->isCompany() && $task->company_id === $user->id;
     }
 
     /**
@@ -50,7 +60,21 @@ class TaskPolicy
      */
     public function delete(User $user, Task $task): bool
     {
-        return $user->isAdmin() || ($user->isCompany() && $task->company_id === $user->id);
+        if ($user->isAdmin()) {
+            return true;
+        }
+
+        // Professionals can NEVER delete tasks
+        if ($user->isProfessional()) {
+            return false;
+        }
+
+        // Companies can only delete if task is pending AND has no professional assigned AND is not completed
+        if ($user->isCompany() && $task->company_id === $user->id) {
+            return $task->status === 'pending' && $task->professional_id === null;
+        }
+
+        return false;
     }
 
     /**

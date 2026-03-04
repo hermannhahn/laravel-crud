@@ -87,7 +87,7 @@ class TaskController extends Controller
             'filters' => $request->only(['search', 'status', 'profession_id', 'sort']),
             'availableProfessions' => $filterProfessions,
             'can' => [
-                'create' => $user->isCompany() || $user->isAdmin(),
+                'create' => $user->can('create', Task::class),
             ]
         ]);
     }
@@ -279,8 +279,9 @@ class TaskController extends Controller
     public function destroy(Task $task): RedirectResponse
     {
         $user = Auth::user();
-        if (!$user->isAdmin() && $task->company_id !== $user->id) {
-            abort(403);
+        
+        if ($user->cannot('delete', $task)) {
+            abort(403, 'You do not have permission to delete this task. Companies cannot delete accepted or completed tasks.');
         }
 
         $task->delete();

@@ -42,10 +42,11 @@ class TaskResource extends JsonResource
             'due_date' => $this->due_date?->format('Y-m-d'),
             'due_date_formatted' => $this->due_date?->format('M d, Y'),
             'completed_at' => $this->completed_at?->format('Y-m-d H:i:s'),
+            'payout' => $this->payout,
             'can' => [
-                'update' => $user?->isAdmin() || ($user && $user->id === $this->company_id),
-                'respond' => $user?->isAdmin() || ($user && $user->id === $this->professional_id),
-                'delete' => $user?->isAdmin() || ($user && $user->id === $this->company_id),
+                'update' => $user && $user->can('update', $this->resource),
+                'respond' => $user && $user->can('view', $this->resource), // Professionals can always view their own or pools
+                'delete' => $user && $user->can('delete', $this->resource),
             ]
         ];
     }
