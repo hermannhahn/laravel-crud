@@ -33,6 +33,7 @@ class DashboardController extends Controller
             $data['stats'] = [
                 'pending' => Task::where('status', '!=', 'completed')->count(),
                 'completed' => Task::where('status', 'completed')->count(),
+                'in_progress_value' => Task::where('status', 'in_progress')->sum('payout'),
                 'monthly_revenue' => $adminRevenue,
                 'commission_rate' => $commissionPercent,
             ];
