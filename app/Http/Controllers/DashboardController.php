@@ -22,9 +22,10 @@ class DashboardController extends Controller
         $days = collect(range(4, 0))->map(fn($i) => Carbon::today()->subDays($i));
 
         if ($user->isAdmin()) {
-            $monthlyCompletedTasks = Task::where('status', 'completed')
+            $totalVolume = Task::where('status', 'completed')
                 ->whereMonth('completed_at', Carbon::now()->month)
-                ->whereYear('completed_at', Carbon::now()->year);
+                ->whereYear('completed_at', Carbon::now()->year)
+                ->sum('payout');
 
             $totalInProgressVolume = Task::where('status', 'in_progress')->sum('payout');
             $commissionPercent = (float) Setting::get('admin_commission_percentage', 0);

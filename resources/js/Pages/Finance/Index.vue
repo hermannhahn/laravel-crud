@@ -15,10 +15,13 @@ const props = defineProps<{
         search?: string;
         date_from?: string;
         date_to?: string;
+        status?: string;
     };
     stats: {
-        total_amount: number;
-        count: number;
+        completed_amount: number;
+        in_progress_amount: number;
+        total_count: number;
+        commission_rate: number;
     };
 }>();
 
@@ -26,19 +29,21 @@ const user = usePage().props.auth.user;
 const search = ref(props.filters.search || '');
 const dateFrom = ref(props.filters.date_from || '');
 const dateTo = ref(props.filters.date_to || '');
+const status = ref(props.filters.status || '');
 
 const filter = debounce(() => {
     router.get(route('finance.index'), {
         search: search.value,
         date_from: dateFrom.value,
         date_to: dateTo.value,
+        status: status.value,
     }, {
         preserveState: true,
         replace: true,
     });
 }, 300);
 
-watch([search, dateFrom, dateTo], filter);
+watch([search, dateFrom, dateTo, status], filter);
 
 const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -49,6 +54,13 @@ const formatCurrency = (value: number) => {
 
 const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString();
+};
+
+const getStatusClass = (status: string) => {
+    return {
+        'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300': status === 'in_progress',
+        'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300': status === 'completed',
+    };
 };
 </script>
 
@@ -63,28 +75,43 @@ const formatDate = (dateString: string) => {
         <div class="py-12">
             <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
                 <!-- Stats Cards -->
-                <div class="grid grid-cols-1 gap-4 mb-6 sm:grid-cols-2 lg:grid-cols-3">
-                    <div class="p-6 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 rounded-lg shadow-sm">
+                <div class="grid grid-cols-1 gap-4 mb-6 sm:grid-cols-2 lg:grid-cols-4">
+                    <!-- Completed Stats -->
+                    <div class="p-6 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 rounded-lg shadow-sm border-l-4 border-green-500">
                         <div class="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase">
-                            {{ user.role === 'admin' ? 'Total Volume' : (user.user_type === 'company' ? 'Total Spent' : 'Total Earned') }}
+                            {{ user.role === 'admin' ? 'Revenue (Completed)' : (user.user_type === 'company' ? 'Spent (Completed)' : 'Earned (Completed)') }}
                         </div>
-                        <div class="mt-1 text-3xl font-semibold text-gray-900 dark:text-white">
-                            {{ formatCurrency(stats.total_amount) }}
+                        <div class="mt-1 text-2xl font-semibold text-gray-900 dark:text-white">
+                            {{ formatCurrency(stats.completed_amount) }}
                         </div>
+                        <div v-if="user.role === 'admin'" class="text-[10px] text-gray-400 mt-1">Rate: {{ stats.commission_rate }}%</div>
                     </div>
+
+                    <!-- In Progress Stats -->
+                    <div class="p-6 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 rounded-lg shadow-sm border-l-4 border-blue-500">
+                        <div class="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase">
+                            {{ user.role === 'admin' ? 'Projected Revenue' : (user.user_type === 'company' ? 'Committed (Pending)' : 'Projected Earnings') }}
+                        </div>
+                        <div class="mt-1 text-2xl font-semibold text-gray-900 dark:text-white">
+                            {{ formatCurrency(stats.in_progress_amount) }}
+                        </div>
+                        <div class="text-[10px] text-gray-400 mt-1">From in-progress {{ $page.props.taskLabelPlural.toLowerCase() }}</div>
+                    </div>
+
+                    <!-- Total Value (Only for non-admin to show full volume) -->
                     <div class="p-6 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 rounded-lg shadow-sm">
                         <div class="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase">
-                            Completed Tasks
+                            Total Items
                         </div>
-                        <div class="mt-1 text-3xl font-semibold text-gray-900 dark:text-white">
-                            {{ stats.count }}
+                        <div class="mt-1 text-2xl font-semibold text-gray-900 dark:text-white">
+                            {{ stats.total_count }}
                         </div>
                     </div>
                 </div>
 
                 <!-- Filters -->
                 <div class="p-6 mb-6 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
-                    <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+                    <div class="grid grid-cols-1 gap-4 md:grid-cols-4">
                         <div>
                             <InputLabel for="search" value="Search" />
                             <TextInput
@@ -92,8 +119,20 @@ const formatDate = (dateString: string) => {
                                 v-model="search"
                                 type="text"
                                 class="block w-full mt-1"
-                                placeholder="Task, Company or Professional..."
+                                :placeholder="'Search ' + $page.props.taskLabelPlural.toLowerCase() + '...'"
                             />
+                        </div>
+                        <div>
+                            <InputLabel for="status" value="Status" />
+                            <select
+                                id="status"
+                                v-model="status"
+                                class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm"
+                            >
+                                <option value="">All Statuses</option>
+                                <option value="in_progress">In Progress</option>
+                                <option value="completed">Completed</option>
+                            </select>
                         </div>
                         <div>
                             <InputLabel for="date_from" value="From" />
@@ -124,6 +163,7 @@ const formatDate = (dateString: string) => {
                                 <tr class="bg-gray-50 dark:bg-gray-700">
                                     <th class="px-6 py-4 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Date</th>
                                     <th class="px-6 py-4 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">{{ $page.props.taskLabelSingular }}</th>
+                                    <th class="px-6 py-4 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Status</th>
                                     <th v-if="user.user_type !== 'company'" class="px-6 py-4 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Company</th>
                                     <th v-if="user.user_type !== 'professional'" class="px-6 py-4 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Professional</th>
                                     <th class="px-6 py-4 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase text-right">Amount</th>
@@ -132,10 +172,15 @@ const formatDate = (dateString: string) => {
                             <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
                                 <tr v-for="task in tasks.data" :key="task.id" class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
-                                        {{ formatDate(task.completed_at) }}
+                                        {{ task.status === 'completed' ? formatDate(task.completed_at) : formatDate(task.created_at) }}
                                     </td>
                                     <td class="px-6 py-4 text-sm text-gray-900 dark:text-gray-100">
                                         {{ task.title }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span :class="['px-2 py-0.5 rounded text-[10px] font-bold uppercase', getStatusClass(task.status)]">
+                                            {{ task.status.replace('_', ' ') }}
+                                        </span>
                                     </td>
                                     <td v-if="user.user_type !== 'company'" class="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
                                         {{ task.company?.name }}
@@ -148,7 +193,7 @@ const formatDate = (dateString: string) => {
                                     </td>
                                 </tr>
                                 <tr v-if="tasks.data.length === 0">
-                                    <td colspan="5" class="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
+                                    <td colspan="6" class="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
                                         No financial records found for this period.
                                     </td>
                                 </tr>
