@@ -112,7 +112,7 @@ const professionalChartData = computed(() => ({
 
                     <!-- Completed Tasks (Shared) -->
                     <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border-l-4 border-green-500">
-                        <div class="text-sm text-gray-500 dark:text-gray-400 uppercase font-bold">Total Completed {{ $page.props.taskLabelPlural }}</div>
+                        <div class="text-sm text-gray-500 dark:text-gray-400 uppercase font-bold">{{ $page.props.taskLabelPlural }} Completed (This Month)</div>
                         <div class="text-3xl font-bold dark:text-white">{{ stats.completed }}</div>
                     </div>
 

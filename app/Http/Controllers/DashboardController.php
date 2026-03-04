@@ -35,7 +35,10 @@ class DashboardController extends Controller
 
             $data['stats'] = [
                 'pending' => Task::where('status', '!=', 'completed')->count(),
-                'completed' => Task::where('status', 'completed')->count(),
+                'completed' => Task::where('status', 'completed')
+                    ->whereMonth('completed_at', Carbon::now()->month)
+                    ->whereYear('completed_at', Carbon::now()->year)
+                    ->count(),
                 'total_projected_revenue' => $adminProjectedRevenue,
                 'monthly_revenue' => $adminRevenue,
                 'commission_rate' => $commissionPercent,
@@ -53,7 +56,11 @@ class DashboardController extends Controller
         } elseif ($user->isCompany()) {
             $data['stats'] = [
                 'pending' => Task::where('company_id', $user->id)->where('status', '!=', 'completed')->count(),
-                'completed' => Task::where('company_id', $user->id)->where('status', 'completed')->count(),
+                'completed' => Task::where('company_id', $user->id)
+                    ->where('status', 'completed')
+                    ->whereMonth('completed_at', Carbon::now()->month)
+                    ->whereYear('completed_at', Carbon::now()->year)
+                    ->count(),
                 'monthly_spent' => Task::where('company_id', $user->id)
                     ->where('status', 'completed')
                     ->whereMonth('completed_at', Carbon::now()->month)
@@ -79,7 +86,11 @@ class DashboardController extends Controller
         } elseif ($user->isProfessional()) {
             $data['stats'] = [
                 'pending' => $user->assignedTasks()->where('status', '!=', 'completed')->count(),
-                'completed' => $user->assignedTasks()->where('status', 'completed')->count(),
+                'completed' => $user->assignedTasks()
+                    ->where('status', 'completed')
+                    ->whereMonth('completed_at', Carbon::now()->month)
+                    ->whereYear('completed_at', Carbon::now()->year)
+                    ->count(),
                 'monthly_earnings' => $user->assignedTasks()->where('status', 'completed')
                     ->whereMonth('completed_at', Carbon::now()->month)
                     ->whereYear('completed_at', Carbon::now()->year)
