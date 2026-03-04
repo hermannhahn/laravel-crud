@@ -108,12 +108,14 @@ const professionalChartData = computed(() => ({
                     <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border-l-4 border-yellow-500">
                         <div class="text-sm text-gray-500 dark:text-gray-400 uppercase font-bold">Total Pending {{ $page.props.taskLabelPlural }}</div>
                         <div class="text-3xl font-bold dark:text-white">{{ stats.pending }}</div>
+                        <div class="text-xs text-gray-400 mt-1">Total Accumulated</div>
                     </div>
 
                     <!-- Completed Tasks (Shared) -->
                     <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border-l-4 border-green-500">
-                        <div class="text-sm text-gray-500 dark:text-gray-400 uppercase font-bold">{{ $page.props.taskLabelPlural }} Completed (This Month)</div>
+                        <div class="text-sm text-gray-500 dark:text-gray-400 uppercase font-bold">{{ $page.props.taskLabelPlural }} Completed</div>
                         <div class="text-3xl font-bold dark:text-white">{{ stats.completed }}</div>
+                        <div class="text-xs text-gray-400 mt-1">This Month</div>
                     </div>
 
                     <!-- Admin Revenue (Admin only) -->
@@ -125,17 +127,18 @@ const professionalChartData = computed(() => ({
                         </div>
 
                         <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border-l-4 border-purple-500">
-                            <div class="text-sm text-gray-500 dark:text-gray-400 uppercase font-bold">Monthly Platform Revenue</div>
+                            <div class="text-sm text-gray-500 dark:text-gray-400 uppercase font-bold">Platform Revenue</div>
                             <div class="text-3xl font-bold dark:text-white text-purple-600">{{ formatCurrency(stats.monthly_revenue || 0) }}</div>
-                            <div class="text-xs text-gray-400 mt-1">Rate: {{ stats.commission_rate }}% (This Month)</div>
+                            <div class="text-xs text-gray-400 mt-1">This Month (Rate: {{ stats.commission_rate }}%)</div>
                         </div>
                     </template>
 
                     <!-- Financial Stats (Company only) -->
                     <template v-if="user.user_type === 'company' && user.role !== 'admin'">
                         <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border-l-4 border-blue-500">
-                            <div class="text-sm text-gray-500 dark:text-gray-400 uppercase font-bold">Spent This Month</div>
+                            <div class="text-sm text-gray-500 dark:text-gray-400 uppercase font-bold">Spent</div>
                             <div class="text-3xl font-bold dark:text-white text-blue-600">{{ formatCurrency(stats.monthly_spent || 0) }}</div>
+                            <div class="text-xs text-gray-400 mt-1">This Month</div>
                         </div>
 
                         <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border-l-4 border-indigo-500">
@@ -148,8 +151,9 @@ const professionalChartData = computed(() => ({
                     <!-- Financial Stats (Professional only) -->
                     <template v-if="user.user_type === 'professional'">
                         <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border-l-4 border-indigo-500">
-                            <div class="text-sm text-gray-500 dark:text-gray-400 uppercase font-bold">Earnings This Month</div>
+                            <div class="text-sm text-gray-500 dark:text-gray-400 uppercase font-bold">Earnings</div>
                             <div class="text-3xl font-bold dark:text-white text-indigo-600">{{ formatCurrency(stats.monthly_earnings || 0) }}</div>
+                            <div class="text-xs text-gray-400 mt-1">This Month</div>
                         </div>
 
                         <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border-l-4 border-orange-500">
