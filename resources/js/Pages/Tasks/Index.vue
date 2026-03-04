@@ -78,14 +78,14 @@ const deleteTask = (id: number) => {
 </script>
 
 <template>
-    <Head title="Tasks" />
+    <Head :title="$page.props.taskLabelPlural" />
 
     <AuthenticatedLayout>
         <template #header>
             <div class="flex justify-between items-center">
-                <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">Tasks</h2>
+                <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">{{ $page.props.taskLabelPlural }}</h2>
                 <Link v-if="can.create" :href="route('tasks.create')">
-                    <PrimaryButton>New Task</PrimaryButton>
+                    <PrimaryButton>New {{ $page.props.taskLabelSingular }}</PrimaryButton>
                 </Link>
             </div>
         </template>
@@ -100,7 +100,7 @@ const deleteTask = (id: number) => {
                             <TextInput 
                                 v-model="search" 
                                 type="text" 
-                                placeholder="Search tasks, professionals, companies..." 
+                                :placeholder="'Search ' + $page.props.taskLabelPlural.toLowerCase() + ', professionals, companies...'" 
                                 class="w-full text-sm"
                             />
                         </div>
@@ -135,14 +135,14 @@ const deleteTask = (id: number) => {
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 text-gray-900 dark:text-gray-100">
                         <div v-if="tasks.data.length === 0" class="text-center py-8">
-                            <p class="text-gray-500 dark:text-gray-400">No tasks found matching your criteria.</p>
+                            <p class="text-gray-500 dark:text-gray-400">No {{ $page.props.taskLabelPlural.toLowerCase() }} found matching your criteria.</p>
                         </div>
                         
                         <div v-else class="overflow-x-auto">
                             <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                                 <thead class="bg-gray-50 dark:bg-gray-900">
                                     <tr>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Task / Details</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ $page.props.taskLabelSingular }} / Details</th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Company</th>
                                         <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
@@ -182,7 +182,7 @@ const deleteTask = (id: number) => {
                                                     v-if="$page.props.auth.user.user_type === 'professional' && !task.professional.id"
                                                     @click.stop="router.post(route('tasks.accept', task.id))"
                                                     class="inline-flex items-center justify-center p-1.5 text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/30 rounded-full transition-colors"
-                                                    title="Accept Task"
+                                                    :title="'Accept ' + $page.props.taskLabelSingular"
                                                 >
                                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                                                 </button>
@@ -192,7 +192,7 @@ const deleteTask = (id: number) => {
                                                     :href="route('tasks.edit', task.id)" 
                                                     @click.stop 
                                                     class="inline-flex items-center justify-center p-1.5 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-full transition-colors"
-                                                    title="Edit Task"
+                                                    :title="'Edit ' + $page.props.taskLabelSingular"
                                                 >
                                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                                                 </Link>
@@ -201,7 +201,7 @@ const deleteTask = (id: number) => {
                                                     v-if="task.can.delete" 
                                                     @click.stop="deleteTask(task.id)" 
                                                     class="inline-flex items-center justify-center p-1.5 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-full transition-colors"
-                                                    title="Delete Task"
+                                                    :title="'Delete ' + $page.props.taskLabelSingular"
                                                 >
                                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                                                 </button>

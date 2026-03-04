@@ -46,42 +46,41 @@ const getStatusClass = (status: string) => {
 </script>
 
 <template>
-    <Head :title="'Task: ' + (task.service.title || task.title)" />
+    <Head :title="$page.props.taskLabelSingular + ': ' + (task.service.title || task.title)" />
 
     <AuthenticatedLayout>
         <template #header>
             <div class="flex justify-between items-center">
                 <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-                    Task Details
+                    {{ $page.props.taskLabelSingular }} Details
                 </h2>
                 <div class="space-x-2">
                     <!-- Professional Actions -->
                     <button 
                         v-if="$page.props.auth.user.user_type === 'professional' && !task.professional.id"
                         @click="router.post(route('tasks.accept', task.id))"
-                        class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 active:bg-green-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition ease-in-out duration-150"
-                    >
-                        Accept Task
-                    </button>
+                        class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-500 active:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150"
+                        >
+                        Accept {{ $page.props.taskLabelSingular }}
+                        </button>
                     <button 
                         v-if="$page.props.auth.user.id === task.professional.id"
                         @click="router.post(route('tasks.release', task.id))"
                         class="inline-flex items-center px-4 py-2 bg-yellow-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-yellow-700 active:bg-yellow-900 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 transition ease-in-out duration-150"
                     >
-                        Release Task
+                        Release {{ $page.props.taskLabelSingular }}
                     </button>
 
-                    <!-- Company Actions -->
                     <button 
                         v-if="$page.props.auth.user.user_type === 'company' && task.professional.id"
                         @click="router.post(route('tasks.unassign', task.id))"
-                        class="inline-flex items-center px-4 py-2 bg-orange-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-orange-700 active:bg-orange-900 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition ease-in-out duration-150"
+                        class="inline-flex items-center px-4 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-500 active:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150"
                     >
-                        Unassign Pro
+                        Unassign Professional from {{ $page.props.taskLabelSingular }}
                     </button>
 
                     <Link v-if="task.can.update" :href="route('tasks.edit', task.id)">
-                        <PrimaryButton>Edit Task</PrimaryButton>
+                        <PrimaryButton>Edit {{ $page.props.taskLabelSingular }}</PrimaryButton>
                     </Link>
                 </div>
             </div>

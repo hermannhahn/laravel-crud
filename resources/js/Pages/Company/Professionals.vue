@@ -171,7 +171,7 @@ const removeProfessional = (pro: any) => {
                                     <tr class="text-left text-xs font-medium text-gray-500 uppercase">
                                         <th class="px-4 py-3">Professional</th>
                                         <th class="px-4 py-3">Authorized Professions</th>
-                                        <th class="px-4 py-3 text-center">Open Tasks</th>
+                                        <th class="px-4 py-3 text-center">Open {{ $page.props.taskLabelPlural }}</th>
                                         <th class="px-4 py-3 text-center">View</th>
                                         <th class="px-4 py-3 text-center">Respond</th>
                                         <th class="px-4 py-3 text-center">Edit</th>

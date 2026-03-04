@@ -40,7 +40,7 @@ const showingNavigationDropdown = ref(false);
                                     Dashboard
                                 </NavLink>
                                 <NavLink :href="route('tasks.index')" :active="route().current('tasks.*')">
-                                    Tasks
+                                    {{ $page.props.taskLabelPlural }}
                                 </NavLink>
                                 <NavLink v-if="$page.props.auth.user.user_type === 'company' || $page.props.auth.user.role === 'admin'" :href="route('professionals.index')" :active="route().current('professionals.*')">
                                     Professionals
@@ -147,7 +147,7 @@ const showingNavigationDropdown = ref(false);
                             Dashboard
                         </ResponsiveNavLink>
                         <ResponsiveNavLink :href="route('tasks.index')" :active="route().current('tasks.*')">
-                            Tasks
+                            {{ $page.props.taskLabelPlural }}
                         </ResponsiveNavLink>
                         <ResponsiveNavLink v-if="$page.props.auth.user.user_type === 'company' || $page.props.auth.user.role === 'admin'" :href="route('professionals.index')" :active="route().current('professionals.*')">
                             Professionals

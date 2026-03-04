@@ -13,6 +13,8 @@ const props = defineProps<{
         app_logo: string | null;
         help_content: string;
         admin_commission_percentage: number;
+        task_label_singular: string;
+        task_label_plural: string;
     }
 }>();
 
@@ -21,6 +23,8 @@ const form = useForm({
     app_logo: null as File | null,
     help_content: props.settings.help_content,
     admin_commission_percentage: String(props.settings.admin_commission_percentage),
+    task_label_singular: props.settings.task_label_singular,
+    task_label_plural: props.settings.task_label_plural,
 });
 
 const logoPreview = ref(props.settings.app_logo);
@@ -106,6 +110,34 @@ const submit = () => {
                                 />
                                 <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Percentage of task payout collected by the platform.</p>
                                 <InputError :message="form.errors.admin_commission_percentage" class="mt-2" />
+                            </div>
+
+                            <!-- Task Labels -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <InputLabel for="task_label_singular" value="Task Label (Singular)" />
+                                    <TextInput
+                                        id="task_label_singular"
+                                        type="text"
+                                        class="mt-1 block w-full"
+                                        v-model="form.task_label_singular"
+                                        required
+                                        placeholder="e.g. Task, Order, Exam"
+                                    />
+                                    <InputError :message="form.errors.task_label_singular" class="mt-2" />
+                                </div>
+                                <div>
+                                    <InputLabel for="task_label_plural" value="Task Label (Plural)" />
+                                    <TextInput
+                                        id="task_label_plural"
+                                        type="text"
+                                        class="mt-1 block w-full"
+                                        v-model="form.task_label_plural"
+                                        required
+                                        placeholder="e.g. Tasks, Orders, Exams"
+                                    />
+                                    <InputError :message="form.errors.task_label_plural" class="mt-2" />
+                                </div>
                             </div>
 
                             <!-- Help Content -->

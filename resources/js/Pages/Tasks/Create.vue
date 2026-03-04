@@ -68,11 +68,11 @@ const submit = () => {
 </script>
 
 <template>
-    <Head title="Create Task" />
+    <Head :title="'Create ' + $page.props.taskLabelSingular" />
 
     <AuthenticatedLayout>
         <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">Create Task</h2>
+            <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">Create {{ $page.props.taskLabelSingular }}</h2>
         </template>
 
         <div class="py-12">
@@ -181,7 +181,7 @@ const submit = () => {
                                     Cancel
                                 </Link>
                                 <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                                    Create Task
+                                    Create {{ $page.props.taskLabelSingular }}
                                 </PrimaryButton>
                             </div>
                         </form>

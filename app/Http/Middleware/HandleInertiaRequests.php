@@ -49,6 +49,8 @@ class HandleInertiaRequests extends Middleware
             ],
             'appName' => Setting::get('app_name', config('app.name')),
             'appLogo' => Setting::get('app_logo'),
+            'taskLabelSingular' => Setting::get('task_label_singular', 'Task'),
+            'taskLabelPlural' => Setting::get('task_label_plural', 'Tasks'),
             'ziggy' => fn () => [
                 ...(new Ziggy)->toArray(),
                 'location' => $request->url(),

@@ -23,6 +23,8 @@ class SettingController extends Controller
                 'app_logo' => Setting::get('app_logo'),
                 'help_content' => Setting::get('help_content', ''),
                 'admin_commission_percentage' => (float) Setting::get('admin_commission_percentage', 0),
+                'task_label_singular' => Setting::get('task_label_singular', 'Task'),
+                'task_label_plural' => Setting::get('task_label_plural', 'Tasks'),
             ]
         ]);
     }
@@ -39,6 +41,8 @@ class SettingController extends Controller
             'app_logo' => 'nullable|image|mimes:jpeg,png,jpg,svg|max:2048',
             'help_content' => 'nullable|string',
             'admin_commission_percentage' => 'nullable|numeric|min:0|max:100',
+            'task_label_singular' => 'nullable|string|max:50',
+            'task_label_plural' => 'nullable|string|max:50',
         ]);
 
         if ($request->has('app_name')) {
@@ -66,6 +70,14 @@ class SettingController extends Controller
         if ($request->has('admin_commission_percentage')) {
             Log::info('Updating admin_commission_percentage: ' . $request->admin_commission_percentage);
             Setting::set('admin_commission_percentage', $request->admin_commission_percentage);
+        }
+
+        if ($request->has('task_label_singular')) {
+            Setting::set('task_label_singular', $request->task_label_singular);
+        }
+
+        if ($request->has('task_label_plural')) {
+            Setting::set('task_label_plural', $request->task_label_plural);
         }
 
         return redirect()->back()->with('message', 'Settings updated successfully.');

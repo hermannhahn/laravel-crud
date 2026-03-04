@@ -59,12 +59,12 @@ const companyChartData = computed(() => ({
     labels: props.chartData.map(d => d.date),
     datasets: [
         {
-            label: 'Tasks Created',
+            label: page.props.taskLabelPlural + ' Created',
             backgroundColor: '#6366f1',
             data: props.chartData.map(d => d.created || 0)
         },
         {
-            label: 'Tasks Completed',
+            label: page.props.taskLabelPlural + ' Completed',
             backgroundColor: '#10b981',
             data: props.chartData.map(d => d.completed)
         }
@@ -75,7 +75,7 @@ const professionalChartData = computed(() => ({
     labels: props.chartData.map(d => d.date),
     datasets: [
         {
-            label: 'Tasks Completed',
+            label: page.props.taskLabelPlural + ' Completed',
             backgroundColor: '#10b981',
             data: props.chartData.map(d => d.completed)
         },
@@ -103,13 +103,13 @@ const professionalChartData = computed(() => ({
                 <div v-if="stats" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     <!-- Pending Tasks (Shared) -->
                     <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border-l-4 border-yellow-500">
-                        <div class="text-sm text-gray-500 dark:text-gray-400 uppercase font-bold">Total Pending Tasks</div>
+                        <div class="text-sm text-gray-500 dark:text-gray-400 uppercase font-bold">Total Pending {{ $page.props.taskLabelPlural }}</div>
                         <div class="text-3xl font-bold dark:text-white">{{ stats.pending }}</div>
                     </div>
 
                     <!-- Completed Tasks (Shared) -->
                     <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border-l-4 border-green-500">
-                        <div class="text-sm text-gray-500 dark:text-gray-400 uppercase font-bold">Total Completed Tasks</div>
+                        <div class="text-sm text-gray-500 dark:text-gray-400 uppercase font-bold">Total Completed {{ $page.props.taskLabelPlural }}</div>
                         <div class="text-3xl font-bold dark:text-white">{{ stats.completed }}</div>
                     </div>
 

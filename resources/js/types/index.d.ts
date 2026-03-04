@@ -22,5 +22,7 @@ export type PageProps<
     };
     appName: string;
     appLogo: string | null;
+    taskLabelSingular: string;
+    taskLabelPlural: string;
     ziggy: Config & { location: string };
 };

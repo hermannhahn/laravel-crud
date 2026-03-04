@@ -123,7 +123,7 @@ const formatDate = (dateString: string) => {
                             <thead>
                                 <tr class="bg-gray-50 dark:bg-gray-700">
                                     <th class="px-6 py-4 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Date</th>
-                                    <th class="px-6 py-4 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Task</th>
+                                    <th class="px-6 py-4 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">{{ $page.props.taskLabelSingular }}</th>
                                     <th v-if="user.user_type !== 'company'" class="px-6 py-4 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Company</th>
                                     <th v-if="user.user_type !== 'professional'" class="px-6 py-4 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Professional</th>
                                     <th class="px-6 py-4 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase text-right">Amount</th>
